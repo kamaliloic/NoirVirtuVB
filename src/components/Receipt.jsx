@@ -1,4 +1,5 @@
 import React from 'react';
+import { formatPrice } from '../utils.js';
 
 export default function Receipt({ order, storeConfig, onContinue }) {
   if (!order) return null;
@@ -63,10 +64,10 @@ export default function Receipt({ order, storeConfig, onContinue }) {
             <div key={`${item.productId}-${idx}`} className="receipt-item-row">
               <div className="receipt-item-details">
                 <span>{item.name}</span>
-                <span>${(item.price * item.quantity).toFixed(2)}</span>
+                <span>{formatPrice(item.price * item.quantity, storeConfig.currency)}</span>
               </div>
               <div style={{ color: '#555', fontSize: '0.75rem', paddingLeft: '0.5rem' }}>
-                QTY: {item.quantity} @ ${item.price.toFixed(2)} // SIZE: {item.size}
+                QTY: {item.quantity} @ {formatPrice(item.price, storeConfig.currency)} // SIZE: {item.size}
               </div>
             </div>
           ))}
@@ -76,31 +77,31 @@ export default function Receipt({ order, storeConfig, onContinue }) {
 
         <div className="receipt-grid">
           <span>SUBTOTAL</span>
-          <span>${order.subtotal.toFixed(2)}</span>
+          <span>{formatPrice(order.subtotal, storeConfig.currency)}</span>
         </div>
         
         {order.discount > 0 && (
           <div className="receipt-grid">
             <span>PROMO DISCOUNT ({order.promoCode})</span>
-            <span>-${order.discount.toFixed(2)}</span>
+            <span>-{formatPrice(order.discount, storeConfig.currency)}</span>
           </div>
         )}
 
         <div className="receipt-grid">
           <span>COURIER SHIPPING</span>
-          <span>${order.shipping.toFixed(2)}</span>
+          <span>{formatPrice(order.shipping, storeConfig.currency)}</span>
         </div>
         
         <div className="receipt-grid">
           <span>SALES TAX ({storeConfig.taxRate || 8.25}%)</span>
-          <span>${order.tax.toFixed(2)}</span>
+          <span>{formatPrice(order.tax, storeConfig.currency)}</span>
         </div>
 
         <div className="receipt-divider"></div>
 
         <div className="receipt-grid" style={{ fontSize: '1rem', fontWeight: 'bold' }}>
           <span>TOTAL PAID</span>
-          <span>${order.total.toFixed(2)}</span>
+          <span>{formatPrice(order.total, storeConfig.currency)}</span>
         </div>
 
         <div className="receipt-divider"></div>

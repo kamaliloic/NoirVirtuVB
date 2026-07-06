@@ -127,7 +127,7 @@ export default function AdminSettings({ storeConfig, onConfigUpdated }) {
             />
           </div>
           <div className="form-group">
-            <label htmlFor="store-shipping">Flat Shipping Rate ($)</label>
+            <label htmlFor="store-shipping">Flat Shipping Rate ({formData.currency})</label>
             <input 
               type="number" 
               step="0.01"
@@ -142,7 +142,7 @@ export default function AdminSettings({ storeConfig, onConfigUpdated }) {
         </div>
 
         <div className="form-group">
-          <label htmlFor="store-threshold">Free Shipping Order Threshold ($)</label>
+          <label htmlFor="store-threshold">Free Shipping Order Threshold ({formData.currency})</label>
           <input 
             type="number" 
             step="0.01"

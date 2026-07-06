@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
+import { formatPrice } from '../utils.js';
 
-export default function ProductDetail({ product, onClose, onAddToCart }) {
+export default function ProductDetail({ product, onClose, onAddToCart, storeConfig }) {
   const [selectedSize, setSelectedSize] = useState('');
   const [qty, setQty] = useState(1);
 
@@ -39,7 +40,7 @@ export default function ProductDetail({ product, onClose, onAddToCart }) {
         <div className="detail-info-section">
           <div className="detail-id">{product.id}</div>
           <h2 className="detail-name">{product.name}</h2>
-          <div className="detail-price">${product.price.toFixed(2)}</div>
+          <div className="detail-price">{formatPrice(product.price, storeConfig.currency)}</div>
           
           <p className="detail-description">{product.description}</p>
           

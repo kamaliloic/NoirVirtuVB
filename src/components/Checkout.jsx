@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { formatPrice } from '../utils.js';
 
 // Sliding Cart Drawer Component
 export function CartDrawer({ isOpen, onClose, cartItems, onUpdateQty, onRemoveItem, onProceedToCheckout, storeConfig }) {
@@ -64,7 +65,7 @@ export function CartDrawer({ isOpen, onClose, cartItems, onUpdateQty, onRemoveIt
                         +
                       </button>
                     </div>
-                    <div className="cart-item-price">${(item.price * item.quantity).toFixed(2)}</div>
+                    <div className="cart-item-price">{formatPrice(item.price * item.quantity, storeConfig.currency)}</div>
                   </div>
 
                   <button 
@@ -83,25 +84,25 @@ export function CartDrawer({ isOpen, onClose, cartItems, onUpdateQty, onRemoveIt
           <div className="cart-footer">
             <div className="summary-row">
               <span>Subtotal</span>
-              <span style={{ fontFamily: 'var(--font-mono)' }}>${subtotal.toFixed(2)}</span>
+              <span style={{ fontFamily: 'var(--font-mono)' }}>{formatPrice(subtotal, storeConfig.currency)}</span>
             </div>
             
             <div className="summary-row" style={{ fontSize: '0.8rem', color: 'var(--text-secondary)' }}>
               <span>Shipping</span>
               <span style={{ fontFamily: 'var(--font-mono)' }}>
-                {isFreeShipping ? 'FREE' : `$${shippingFee.toFixed(2)}`}
+                {isFreeShipping ? 'FREE' : formatPrice(shippingFee, storeConfig.currency)}
               </span>
             </div>
             
             {!isFreeShipping && (
               <div style={{ fontSize: '0.75rem', color: 'var(--accent-secondary)', marginTop: '-0.25rem', marginBottom: '0.75rem', textAlign: 'right' }}>
-                Add ${(threshold - subtotal).toFixed(2)} more for FREE SHIPPING
+                Add {formatPrice(threshold - subtotal, storeConfig.currency)} more for FREE SHIPPING
               </div>
             )}
 
             <div className="summary-row total-row">
               <span>Subtotal Estimate</span>
-              <span style={{ fontFamily: 'var(--font-mono)' }}>${(subtotal + shippingFee).toFixed(2)}</span>
+              <span style={{ fontFamily: 'var(--font-mono)' }}>{formatPrice(subtotal + shippingFee, storeConfig.currency)}</span>
             </div>
 
             <button className="btn checkout-btn" onClick={onProceedToCheckout}>
@@ -422,7 +423,7 @@ export default function Checkout({ cartItems, storeConfig, onOrderSuccess, onCan
             style={{ width: '100%', padding: '1.25rem', marginTop: '1rem' }} 
             disabled={processing || cartItems.length === 0}
           >
-            {processing ? 'Processing Secure Checkout...' : `Authorize & Pay $${total.toFixed(2)}`}
+            {processing ? 'Processing Secure Checkout...' : `Authorize & Pay ${formatPrice(total, storeConfig.currency)}`}
           </button>
         </form>
       </div>
@@ -443,7 +444,7 @@ export default function Checkout({ cartItems, storeConfig, onOrderSuccess, onCan
                     QTY: {item.quantity} // SIZE: {item.size}
                   </div>
                 </div>
-                <span style={{ fontFamily: 'var(--font-mono)' }}>${(item.price * item.quantity).toFixed(2)}</span>
+                <span style={{ fontFamily: 'var(--font-mono)' }}>{formatPrice(item.price * item.quantity, storeConfig.currency)}</span>
               </div>
             ))}
           </div>
@@ -470,7 +471,7 @@ export default function Checkout({ cartItems, storeConfig, onOrderSuccess, onCan
             
             {activePromo && (
               <div className="promo-tag">
-                <span>[PROMO: {activePromo.code}] -{activePromo.type === 'percent' ? `${activePromo.value}%` : `$${activePromo.value}`}</span>
+                <span>[PROMO: {activePromo.code}] -{activePromo.type === 'percent' ? `${activePromo.value}%` : formatPrice(activePromo.value, storeConfig.currency)}</span>
                 <button type="button" className="promo-remove-btn" onClick={removePromo}>×</button>
               </div>
             )}
@@ -480,31 +481,31 @@ export default function Checkout({ cartItems, storeConfig, onOrderSuccess, onCan
           <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem', borderTop: '1px solid var(--border-color)', paddingTop: '1.5rem' }}>
             <div className="summary-row">
               <span style={{ color: 'var(--text-secondary)' }}>Items Subtotal</span>
-              <span style={{ fontFamily: 'var(--font-mono)' }}>${subtotal.toFixed(2)}</span>
+              <span style={{ fontFamily: 'var(--font-mono)' }}>{formatPrice(subtotal, storeConfig.currency)}</span>
             </div>
             
             {activePromo && (
               <div className="summary-row" style={{ color: 'var(--success)' }}>
                 <span>Discount Applied</span>
-                <span style={{ fontFamily: 'var(--font-mono)' }}>-${discount.toFixed(2)}</span>
+                <span style={{ fontFamily: 'var(--font-mono)' }}>-{formatPrice(discount, storeConfig.currency)}</span>
               </div>
             )}
             
             <div className="summary-row">
               <span style={{ color: 'var(--text-secondary)' }}>Courier Shipping</span>
               <span style={{ fontFamily: 'var(--font-mono)' }}>
-                {shipping === 0 ? 'FREE' : `$${shipping.toFixed(2)}`}
+                {shipping === 0 ? 'FREE' : formatPrice(shipping, storeConfig.currency)}
               </span>
             </div>
             
             <div className="summary-row">
               <span style={{ color: 'var(--text-secondary)' }}>Estimated Tax ({storeConfig.taxRate || 8.25}%)</span>
-              <span style={{ fontFamily: 'var(--font-mono)' }}>${tax.toFixed(2)}</span>
+              <span style={{ fontFamily: 'var(--font-mono)' }}>{formatPrice(tax, storeConfig.currency)}</span>
             </div>
             
             <div className="summary-row total-row" style={{ marginBottom: 0 }}>
               <span>Total Payment Due</span>
-              <span style={{ fontFamily: 'var(--font-mono)', fontSize: '1.25rem' }}>${total.toFixed(2)}</span>
+              <span style={{ fontFamily: 'var(--font-mono)', fontSize: '1.25rem' }}>{formatPrice(total, storeConfig.currency)}</span>
             </div>
           </div>
         </div>

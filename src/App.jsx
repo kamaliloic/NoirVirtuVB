@@ -230,7 +230,7 @@ export default function App() {
   const renderAdminTab = () => {
     switch (adminTab) {
       case 'dashboard':
-        return <AdminDashboard analyticsData={analyticsData} loading={loading} onRefresh={fetchAnalytics} />;
+        return <AdminDashboard analyticsData={analyticsData} loading={loading} onRefresh={fetchAnalytics} storeConfig={storeConfig} />;
       case 'products':
         return (
           <AdminProducts 
@@ -238,6 +238,7 @@ export default function App() {
             onProductCreated={handleProductCreated}
             onProductUpdated={handleProductUpdated}
             onProductDeleted={handleProductDeleted}
+            storeConfig={storeConfig}
           />
         );
       case 'orders':
@@ -259,12 +260,13 @@ export default function App() {
             onPromoCreated={handlePromoCreated}
             onPromoUpdated={handlePromoUpdated}
             onPromoDeleted={handlePromoDeleted}
+            storeConfig={storeConfig}
           />
         );
       case 'settings':
         return <AdminSettings storeConfig={storeConfig} onConfigUpdated={handleConfigUpdated} />;
       default:
-        return <AdminDashboard analyticsData={analyticsData} loading={loading} onRefresh={fetchAnalytics} />;
+        return <AdminDashboard analyticsData={analyticsData} loading={loading} onRefresh={fetchAnalytics} storeConfig={storeConfig} />;
     }
   };
 
@@ -277,6 +279,7 @@ export default function App() {
           cartItemsCount={cart.reduce((sum, i) => sum + i.quantity, 0)}
           onCartOpen={() => setIsCartOpen(true)}
           onNavigateToAdmin={() => setView('admin')}
+          storeConfig={storeConfig}
         />
       )}
 
@@ -415,6 +418,7 @@ export default function App() {
           product={selectedProduct} 
           onClose={() => setSelectedProduct(null)} 
           onAddToCart={handleAddToCart}
+          storeConfig={storeConfig}
         />
       )}
 

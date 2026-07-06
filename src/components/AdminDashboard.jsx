@@ -1,6 +1,7 @@
-import React, { useState, useEffect } from 'react';
+import React from 'react';
+import { formatPrice } from '../utils.js';
 
-export default function AdminDashboard({ analyticsData, loading, onRefresh }) {
+export default function AdminDashboard({ analyticsData, loading, onRefresh, storeConfig }) {
   if (loading) {
     return <div style={{ color: 'var(--text-secondary)' }}>Loading business metrics...</div>;
   }
@@ -42,7 +43,7 @@ export default function AdminDashboard({ analyticsData, loading, onRefresh }) {
       <div className="kpi-grid">
         <div className="kpi-card">
           <span className="kpi-label">Gross Revenue</span>
-          <span className="kpi-value">${summary.totalRevenue?.toFixed(2) || '0.00'}</span>
+          <span className="kpi-value">{formatPrice(summary.totalRevenue || 0, storeConfig.currency)}</span>
         </div>
         <div className="kpi-card">
           <span className="kpi-label">Total Sales Volume</span>
@@ -50,7 +51,7 @@ export default function AdminDashboard({ analyticsData, loading, onRefresh }) {
         </div>
         <div className="kpi-card">
           <span className="kpi-label">Average Ticket Size</span>
-          <span className="kpi-value">${summary.averageOrderValue?.toFixed(2) || '0.00'}</span>
+          <span className="kpi-value">{formatPrice(summary.averageOrderValue || 0, storeConfig.currency)}</span>
         </div>
         <div className="kpi-card">
           <span className="kpi-label">Active Promos</span>
@@ -96,7 +97,7 @@ export default function AdminDashboard({ analyticsData, loading, onRefresh }) {
                       r="4" 
                       className="chart-dot"
                     >
-                      <title>{`Date: ${c.date}\nRevenue: $${c.val.toFixed(2)}`}</title>
+                      <title>{`Date: ${c.date}\nRevenue: ${formatPrice(c.val, storeConfig.currency)}`}</title>
                     </circle>
                     
                     {/* Date label for first, middle, last */}
@@ -140,7 +141,7 @@ export default function AdminDashboard({ analyticsData, loading, onRefresh }) {
                     <div className="ranking-meta">
                       <span style={{ fontWeight: '500' }}>{item.name}</span>
                       <span style={{ fontFamily: 'var(--font-mono)', color: 'var(--text-secondary)' }}>
-                        {item.quantity} units // ${item.revenue.toFixed(2)}
+                        {item.quantity} units // {formatPrice(item.revenue, storeConfig.currency)}
                       </span>
                     </div>
                     <div className="ranking-bar-bg">

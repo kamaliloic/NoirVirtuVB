@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
+import { formatPrice } from '../utils.js';
 
-export default function AdminPromotions({ promotions, onPromoCreated, onPromoUpdated, onPromoDeleted }) {
+export default function AdminPromotions({ promotions, onPromoCreated, onPromoUpdated, onPromoDeleted, storeConfig }) {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [formData, setFormData] = useState({
     code: '',
@@ -123,7 +124,7 @@ export default function AdminPromotions({ promotions, onPromoCreated, onPromoUpd
                     <td style={{ fontFamily: 'var(--font-mono)', fontWeight: 'bold' }}>{promo.code}</td>
                     <td style={{ textTransform: 'uppercase', fontSize: '0.8rem' }}>{promo.type}</td>
                     <td style={{ fontFamily: 'var(--font-mono)' }}>
-                      {promo.type === 'percent' ? `${promo.value}%` : `$${promo.value.toFixed(2)}`}
+                      {promo.type === 'percent' ? `${promo.value}%` : formatPrice(promo.value, storeConfig.currency)}
                     </td>
                     <td style={{ color: 'var(--text-secondary)' }}>{promo.description || '-'}</td>
                     <td>
@@ -202,7 +203,7 @@ export default function AdminPromotions({ promotions, onPromoCreated, onPromoUpd
                     onChange={handleInputChange}
                   >
                     <option value="percent">Percentage Off (%)</option>
-                    <option value="fixed">Fixed Dollar Off ($)</option>
+                    <option value="fixed">Fixed Amount Off ({storeConfig.currency})</option>
                   </select>
                 </div>
                 <div className="form-group">

@@ -16,8 +16,8 @@
   {
     "code": "STREET50",
     "type": "fixed",
-    "value": 50,
+    "value": 50000,
     "active": false,
-    "description": "Save $50 on any purchase (currently inactive)."
+    "description": "Save 50,000 Rwf on any purchase (currently inactive)."
   }
 ]

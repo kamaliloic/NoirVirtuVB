@@ -4,10 +4,10 @@
     "customer": {
       "name": "Marcus Vance",
       "email": "marcus@vance.co",
-      "address": "128 W 8th St, Penthouse B",
-      "city": "Los Angeles",
-      "state": "CA",
-      "postalCode": "90014"
+      "address": "KG 622 St, Kiyovu",
+      "city": "Kigali",
+      "state": "Kigali",
+      "postalCode": "0000"
     },
     "items": [
       {
@@ -15,28 +15,28 @@
         "name": "Memento Mori Graphic Tee",
         "size": "One Size",
         "quantity": 1,
-        "price": 45
+        "price": 45000
       }
     ],
-    "subtotal": 45,
+    "subtotal": 45000,
     "discount": 0,
-    "tax": 3.71,
-    "shipping": 10,
-    "total": 58.71,
+    "tax": 8100,
+    "shipping": 5000,
+    "total": 58100,
     "promoCode": "",
     "paymentMethod": "Visa (Mock)",
     "status": "Completed",
-    "date": "2026-06-22T19:06:53.186Z"
+    "date": "2026-06-22T20:33:22.918Z"
   },
   {
     "id": "NV-1001",
     "customer": {
       "name": "Elena Rostova",
       "email": "elena.ros@gmail.com",
-      "address": "128 W 8th St, Penthouse B",
-      "city": "Los Angeles",
-      "state": "CA",
-      "postalCode": "90014"
+      "address": "KG 622 St, Kiyovu",
+      "city": "Kigali",
+      "state": "Kigali",
+      "postalCode": "0000"
     },
     "items": [
       {
@@ -44,35 +44,35 @@
         "name": "Vandal Cargo Pants",
         "size": "XL",
         "quantity": 1,
-        "price": 125
+        "price": 125000
       },
       {
         "productId": "NOIR-003",
         "name": "Memento Mori Graphic Tee",
         "size": "One Size",
         "quantity": 1,
-        "price": 45
+        "price": 45000
       }
     ],
-    "subtotal": 170,
+    "subtotal": 170000,
     "discount": 0,
-    "tax": 14.03,
+    "tax": 30600,
     "shipping": 0,
-    "total": 184.03,
+    "total": 200600,
     "promoCode": "",
     "paymentMethod": "Visa (Mock)",
     "status": "Completed",
-    "date": "2026-06-23T19:06:53.187Z"
+    "date": "2026-06-23T20:33:22.918Z"
   },
   {
     "id": "NV-1002",
     "customer": {
       "name": "Kai Tanaka",
       "email": "kai@tanakadesign.jp",
-      "address": "128 W 8th St, Penthouse B",
-      "city": "Los Angeles",
-      "state": "CA",
-      "postalCode": "90014"
+      "address": "KG 622 St, Kiyovu",
+      "city": "Kigali",
+      "state": "Kigali",
+      "postalCode": "0000"
     },
     "items": [
       {
@@ -80,28 +80,28 @@
         "name": "Virtu Heavy Graphic Hoodie",
         "size": "L",
         "quantity": 1,
-        "price": 95
+        "price": 95000
       }
     ],
-    "subtotal": 95,
-    "discount": 9.5,
-    "tax": 7.05,
-    "shipping": 10,
-    "total": 102.55,
+    "subtotal": 95000,
+    "discount": 9500,
+    "tax": 15390,
+    "shipping": 5000,
+    "total": 105890,
     "promoCode": "NOIR10",
     "paymentMethod": "Visa (Mock)",
     "status": "Completed",
-    "date": "2026-06-24T19:06:53.187Z"
+    "date": "2026-06-24T20:33:22.918Z"
   },
   {
     "id": "NV-1003",
     "customer": {
       "name": "Chloe Dubois",
       "email": "chloe@dubois.fr",
-      "address": "128 W 8th St, Penthouse B",
-      "city": "Los Angeles",
-      "state": "CA",
-      "postalCode": "90014"
+      "address": "KG 622 St, Kiyovu",
+      "city": "Kigali",
+      "state": "Kigali",
+      "postalCode": "0000"
     },
     "items": [
       {
@@ -109,28 +109,28 @@
         "name": "Vandal Cargo Pants",
         "size": "L",
         "quantity": 1,
-        "price": 125
+        "price": 125000
       }
     ],
-    "subtotal": 125,
-    "discount": 12.5,
-    "tax": 9.28,
-    "shipping": 10,
-    "total": 131.78,
+    "subtotal": 125000,
+    "discount": 12500,
+    "tax": 20250,
+    "shipping": 5000,
+    "total": 137750,
     "promoCode": "NOIR10",
     "paymentMethod": "Visa (Mock)",
     "status": "Completed",
-    "date": "2026-06-24T19:06:53.187Z"
+    "date": "2026-06-24T20:33:22.918Z"
   },
   {
     "id": "NV-1004",
     "customer": {
       "name": "Jaden Cole",
       "email": "jaden.c@outlook.com",
-      "address": "128 W 8th St, Penthouse B",
-      "city": "Los Angeles",
-      "state": "CA",
-      "postalCode": "90014"
+      "address": "KG 622 St, Kiyovu",
+      "city": "Kigali",
+      "state": "Kigali",
+      "postalCode": "0000"
     },
     "items": [
       {
@@ -138,35 +138,35 @@
         "name": "Sigil Ribbed Beanie",
         "size": "M",
         "quantity": 1,
-        "price": 30
+        "price": 30000
       },
       {
         "productId": "NOIR-001",
         "name": "Virtu Heavy Graphic Hoodie",
         "size": "L",
         "quantity": 1,
-        "price": 95
+        "price": 95000
       }
     ],
-    "subtotal": 125,
+    "subtotal": 125000,
     "discount": 0,
-    "tax": 10.31,
-    "shipping": 10,
-    "total": 145.31,
+    "tax": 22500,
+    "shipping": 5000,
+    "total": 152500,
     "promoCode": "",
     "paymentMethod": "Visa (Mock)",
     "status": "Completed",
-    "date": "2026-06-25T19:06:53.187Z"
+    "date": "2026-06-25T20:33:22.918Z"
   },
   {
     "id": "NV-1005",
     "customer": {
       "name": "Aria Vance",
       "email": "aria@vance.co",
-      "address": "128 W 8th St, Penthouse B",
-      "city": "Los Angeles",
-      "state": "CA",
-      "postalCode": "90014"
+      "address": "KG 622 St, Kiyovu",
+      "city": "Kigali",
+      "state": "Kigali",
+      "postalCode": "0000"
     },
     "items": [
       {
@@ -174,35 +174,35 @@
         "name": "Vandal Cargo Pants",
         "size": "One Size",
         "quantity": 1,
-        "price": 125
+        "price": 125000
       },
       {
         "productId": "NOIR-003",
         "name": "Memento Mori Graphic Tee",
         "size": "S",
         "quantity": 1,
-        "price": 45
+        "price": 45000
       }
     ],
-    "subtotal": 170,
+    "subtotal": 170000,
     "discount": 0,
-    "tax": 14.03,
+    "tax": 30600,
     "shipping": 0,
-    "total": 184.03,
+    "total": 200600,
     "promoCode": "",
     "paymentMethod": "Visa (Mock)",
     "status": "Completed",
-    "date": "2026-06-27T19:06:53.187Z"
+    "date": "2026-06-27T20:33:22.918Z"
   },
   {
     "id": "NV-1006",
     "customer": {
       "name": "Darnell Jackson",
       "email": "darnell@j-style.com",
-      "address": "128 W 8th St, Penthouse B",
-      "city": "Los Angeles",
-      "state": "CA",
-      "postalCode": "90014"
+      "address": "KG 622 St, Kiyovu",
+      "city": "Kigali",
+      "state": "Kigali",
+      "postalCode": "0000"
     },
     "items": [
       {
@@ -210,35 +210,35 @@
         "name": "Memento Mori Graphic Tee",
         "size": "One Size",
         "quantity": 1,
-        "price": 45
+        "price": 45000
       },
       {
         "productId": "NOIR-004",
         "name": "Sigil Ribbed Beanie",
         "size": "S",
         "quantity": 1,
-        "price": 30
+        "price": 30000
       }
     ],
-    "subtotal": 75,
+    "subtotal": 75000,
     "discount": 0,
-    "tax": 6.19,
-    "shipping": 10,
-    "total": 91.19,
+    "tax": 13500,
+    "shipping": 5000,
+    "total": 93500,
     "promoCode": "",
     "paymentMethod": "Visa (Mock)",
     "status": "Completed",
-    "date": "2026-06-27T19:06:53.187Z"
+    "date": "2026-06-27T20:33:22.918Z"
   },
   {
     "id": "NV-1007",
     "customer": {
       "name": "Marcus Vance",
       "email": "marcus@vance.co",
-      "address": "128 W 8th St, Penthouse B",
-      "city": "Los Angeles",
-      "state": "CA",
-      "postalCode": "90014"
+      "address": "KG 622 St, Kiyovu",
+      "city": "Kigali",
+      "state": "Kigali",
+      "postalCode": "0000"
     },
     "items": [
       {
@@ -246,28 +246,28 @@
         "name": "Virtu Heavy Graphic Hoodie",
         "size": "XL",
         "quantity": 1,
-        "price": 95
+        "price": 95000
       }
     ],
-    "subtotal": 95,
-    "discount": 9.5,
-    "tax": 7.05,
-    "shipping": 10,
-    "total": 102.55,
+    "subtotal": 95000,
+    "discount": 9500,
+    "tax": 15390,
+    "shipping": 5000,
+    "total": 105890,
     "promoCode": "NOIR10",
     "paymentMethod": "Visa (Mock)",
     "status": "Completed",
-    "date": "2026-06-28T19:06:53.187Z"
+    "date": "2026-06-28T20:33:22.918Z"
   },
   {
     "id": "NV-1008",
     "customer": {
       "name": "Elena Rostova",
       "email": "elena.ros@gmail.com",
-      "address": "128 W 8th St, Penthouse B",
-      "city": "Los Angeles",
-      "state": "CA",
-      "postalCode": "90014"
+      "address": "KG 622 St, Kiyovu",
+      "city": "Kigali",
+      "state": "Kigali",
+      "postalCode": "0000"
     },
     "items": [
       {
@@ -275,35 +275,35 @@
         "name": "Sigil Ribbed Beanie",
         "size": "L",
         "quantity": 1,
-        "price": 30
+        "price": 30000
       },
       {
         "productId": "NOIR-001",
         "name": "Virtu Heavy Graphic Hoodie",
         "size": "XL",
         "quantity": 1,
-        "price": 95
+        "price": 95000
       }
     ],
-    "subtotal": 125,
+    "subtotal": 125000,
     "discount": 0,
-    "tax": 10.31,
-    "shipping": 10,
-    "total": 145.31,
+    "tax": 22500,
+    "shipping": 5000,
+    "total": 152500,
     "promoCode": "",
     "paymentMethod": "Visa (Mock)",
     "status": "Completed",
-    "date": "2026-06-29T19:06:53.187Z"
+    "date": "2026-06-29T20:33:22.918Z"
   },
   {
     "id": "NV-1009",
     "customer": {
       "name": "Kai Tanaka",
       "email": "kai@tanakadesign.jp",
-      "address": "128 W 8th St, Penthouse B",
-      "city": "Los Angeles",
-      "state": "CA",
-      "postalCode": "90014"
+      "address": "KG 622 St, Kiyovu",
+      "city": "Kigali",
+      "state": "Kigali",
+      "postalCode": "0000"
     },
     "items": [
       {
@@ -311,28 +311,28 @@
         "name": "Memento Mori Graphic Tee",
         "size": "M",
         "quantity": 1,
-        "price": 45
+        "price": 45000
       }
     ],
-    "subtotal": 45,
+    "subtotal": 45000,
     "discount": 0,
-    "tax": 3.71,
-    "shipping": 10,
-    "total": 58.71,
+    "tax": 8100,
+    "shipping": 5000,
+    "total": 58100,
     "promoCode": "",
     "paymentMethod": "Visa (Mock)",
     "status": "Completed",
-    "date": "2026-06-30T19:06:53.187Z"
+    "date": "2026-06-30T20:33:22.918Z"
   },
   {
     "id": "NV-1010",
     "customer": {
       "name": "Chloe Dubois",
       "email": "chloe@dubois.fr",
-      "address": "128 W 8th St, Penthouse B",
-      "city": "Los Angeles",
-      "state": "CA",
-      "postalCode": "90014"
+      "address": "KG 622 St, Kiyovu",
+      "city": "Kigali",
+      "state": "Kigali",
+      "postalCode": "0000"
     },
     "items": [
       {
@@ -340,28 +340,28 @@
         "name": "Sigil Ribbed Beanie",
         "size": "M",
         "quantity": 1,
-        "price": 30
+        "price": 30000
       }
     ],
-    "subtotal": 30,
+    "subtotal": 30000,
     "discount": 0,
-    "tax": 2.48,
-    "shipping": 10,
-    "total": 42.48,
+    "tax": 5400,
+    "shipping": 5000,
+    "total": 40400,
     "promoCode": "",
     "paymentMethod": "Visa (Mock)",
     "status": "Completed",
-    "date": "2026-06-30T19:06:53.187Z"
+    "date": "2026-06-30T20:33:22.918Z"
   },
   {
     "id": "NV-1011",
     "customer": {
       "name": "Jaden Cole",
       "email": "jaden.c@outlook.com",
-      "address": "128 W 8th St, Penthouse B",
-      "city": "Los Angeles",
-      "state": "CA",
-      "postalCode": "90014"
+      "address": "KG 622 St, Kiyovu",
+      "city": "Kigali",
+      "state": "Kigali",
+      "postalCode": "0000"
     },
     "items": [
       {
@@ -369,28 +369,28 @@
         "name": "Virtu Heavy Graphic Hoodie",
         "size": "One Size",
         "quantity": 1,
-        "price": 95
+        "price": 95000
       }
     ],
-    "subtotal": 95,
-    "discount": 9.5,
-    "tax": 7.05,
-    "shipping": 10,
-    "total": 102.55,
+    "subtotal": 95000,
+    "discount": 9500,
+    "tax": 15390,
+    "shipping": 5000,
+    "total": 105890,
     "promoCode": "NOIR10",
     "paymentMethod": "Visa (Mock)",
     "status": "Completed",
-    "date": "2026-07-02T19:06:53.187Z"
+    "date": "2026-07-02T20:33:22.918Z"
   },
   {
     "id": "NV-1012",
     "customer": {
       "name": "Aria Vance",
       "email": "aria@vance.co",
-      "address": "128 W 8th St, Penthouse B",
-      "city": "Los Angeles",
-      "state": "CA",
-      "postalCode": "90014"
+      "address": "KG 622 St, Kiyovu",
+      "city": "Kigali",
+      "state": "Kigali",
+      "postalCode": "0000"
     },
     "items": [
       {
@@ -398,35 +398,35 @@
         "name": "Sigil Ribbed Beanie",
         "size": "XL",
         "quantity": 1,
-        "price": 30
+        "price": 30000
       },
       {
         "productId": "NOIR-001",
         "name": "Virtu Heavy Graphic Hoodie",
         "size": "One Size",
         "quantity": 1,
-        "price": 95
+        "price": 95000
       }
     ],
-    "subtotal": 125,
+    "subtotal": 125000,
     "discount": 0,
-    "tax": 10.31,
-    "shipping": 10,
-    "total": 145.31,
+    "tax": 22500,
+    "shipping": 5000,
+    "total": 152500,
     "promoCode": "",
     "paymentMethod": "Visa (Mock)",
     "status": "Completed",
-    "date": "2026-07-03T19:06:53.187Z"
+    "date": "2026-07-03T20:33:22.918Z"
   },
   {
     "id": "NV-1013",
     "customer": {
       "name": "Darnell Jackson",
       "email": "darnell@j-style.com",
-      "address": "128 W 8th St, Penthouse B",
-      "city": "Los Angeles",
-      "state": "CA",
-      "postalCode": "90014"
+      "address": "KG 622 St, Kiyovu",
+      "city": "Kigali",
+      "state": "Kigali",
+      "postalCode": "0000"
     },
     "items": [
       {
@@ -434,35 +434,35 @@
         "name": "Virtu Heavy Graphic Hoodie",
         "size": "XL",
         "quantity": 1,
-        "price": 95
+        "price": 95000
       },
       {
         "productId": "NOIR-002",
         "name": "Vandal Cargo Pants",
         "size": "One Size",
         "quantity": 1,
-        "price": 125
+        "price": 125000
       }
     ],
-    "subtotal": 220,
+    "subtotal": 220000,
     "discount": 0,
-    "tax": 18.15,
+    "tax": 39600,
     "shipping": 0,
-    "total": 238.15,
+    "total": 259600,
     "promoCode": "",
     "paymentMethod": "Visa (Mock)",
     "status": "Completed",
-    "date": "2026-07-03T19:06:53.187Z"
+    "date": "2026-07-03T20:33:22.918Z"
   },
   {
     "id": "NV-1014",
     "customer": {
       "name": "Marcus Vance",
       "email": "marcus@vance.co",
-      "address": "128 W 8th St, Penthouse B",
-      "city": "Los Angeles",
-      "state": "CA",
-      "postalCode": "90014"
+      "address": "KG 622 St, Kiyovu",
+      "city": "Kigali",
+      "state": "Kigali",
+      "postalCode": "0000"
     },
     "items": [
       {
@@ -470,28 +470,28 @@
         "name": "Memento Mori Graphic Tee",
         "size": "L",
         "quantity": 1,
-        "price": 45
+        "price": 45000
       }
     ],
-    "subtotal": 45,
+    "subtotal": 45000,
     "discount": 0,
-    "tax": 3.71,
-    "shipping": 10,
-    "total": 58.71,
+    "tax": 8100,
+    "shipping": 5000,
+    "total": 58100,
     "promoCode": "",
     "paymentMethod": "Visa (Mock)",
     "status": "Processing",
-    "date": "2026-07-04T19:06:53.187Z"
+    "date": "2026-07-04T20:33:22.918Z"
   },
   {
     "id": "NV-1015",
     "customer": {
       "name": "Elena Rostova",
       "email": "elena.ros@gmail.com",
-      "address": "128 W 8th St, Penthouse B",
-      "city": "Los Angeles",
-      "state": "CA",
-      "postalCode": "90014"
+      "address": "KG 622 St, Kiyovu",
+      "city": "Kigali",
+      "state": "Kigali",
+      "postalCode": "0000"
     },
     "items": [
       {
@@ -499,35 +499,35 @@
         "name": "Vandal Cargo Pants",
         "size": "M",
         "quantity": 1,
-        "price": 125
+        "price": 125000
       },
       {
         "productId": "NOIR-003",
         "name": "Memento Mori Graphic Tee",
         "size": "L",
         "quantity": 1,
-        "price": 45
+        "price": 45000
       }
     ],
-    "subtotal": 170,
+    "subtotal": 170000,
     "discount": 0,
-    "tax": 14.03,
+    "tax": 30600,
     "shipping": 0,
-    "total": 184.03,
+    "total": 200600,
     "promoCode": "",
     "paymentMethod": "Visa (Mock)",
     "status": "Processing",
-    "date": "2026-07-05T19:06:53.187Z"
+    "date": "2026-07-05T20:33:22.918Z"
   },
   {
     "id": "NV-1016",
     "customer": {
       "name": "Kai Tanaka",
       "email": "kai@tanakadesign.jp",
-      "address": "128 W 8th St, Penthouse B",
-      "city": "Los Angeles",
-      "state": "CA",
-      "postalCode": "90014"
+      "address": "KG 622 St, Kiyovu",
+      "city": "Kigali",
+      "state": "Kigali",
+      "postalCode": "0000"
     },
     "items": [
       {
@@ -535,28 +535,28 @@
         "name": "Virtu Heavy Graphic Hoodie",
         "size": "S",
         "quantity": 1,
-        "price": 95
+        "price": 95000
       }
     ],
-    "subtotal": 95,
-    "discount": 9.5,
-    "tax": 7.05,
-    "shipping": 10,
-    "total": 102.55,
+    "subtotal": 95000,
+    "discount": 9500,
+    "tax": 15390,
+    "shipping": 5000,
+    "total": 105890,
     "promoCode": "NOIR10",
     "paymentMethod": "Visa (Mock)",
     "status": "Pending",
-    "date": "2026-07-06T19:06:53.187Z"
+    "date": "2026-07-06T20:33:22.918Z"
   },
   {
     "id": "NV-1017",
     "customer": {
       "name": "Chloe Dubois",
       "email": "chloe@dubois.fr",
-      "address": "128 W 8th St, Penthouse B",
-      "city": "Los Angeles",
-      "state": "CA",
-      "postalCode": "90014"
+      "address": "KG 622 St, Kiyovu",
+      "city": "Kigali",
+      "state": "Kigali",
+      "postalCode": "0000"
     },
     "items": [
       {
@@ -564,46 +564,46 @@
         "name": "Vandal Cargo Pants",
         "size": "S",
         "quantity": 1,
-        "price": 125
+        "price": 125000
       }
     ],
-    "subtotal": 125,
-    "discount": 12.5,
-    "tax": 9.28,
-    "shipping": 10,
-    "total": 131.78,
+    "subtotal": 125000,
+    "discount": 12500,
+    "tax": 20250,
+    "shipping": 5000,
+    "total": 137750,
     "promoCode": "NOIR10",
     "paymentMethod": "Visa (Mock)",
     "status": "Pending",
-    "date": "2026-07-06T19:06:53.187Z"
+    "date": "2026-07-06T20:33:22.918Z"
   },
   {
     "id": "NV-1019",
     "customer": {
       "name": "Marcus Vance",
       "email": "marcus@vance.co",
-      "address": "128 W 8th St, Penthouse B",
-      "city": "Los Angeles",
-      "state": "CA",
-      "postalCode": "90014"
+      "address": "123 Main St",
+      "city": "Kigali",
+      "state": "KN",
+      "postalCode": "0000"
     },
     "items": [
       {
         "productId": "NOIR-001",
         "name": "Virtu Heavy Graphic Hoodie",
-        "size": "M",
+        "size": "S",
         "quantity": 1,
-        "price": 95
+        "price": 95000
       }
     ],
-    "subtotal": 95,
-    "discount": 9.5,
-    "tax": 7.05,
-    "shipping": 10,
-    "total": 102.55,
+    "subtotal": 95000,
+    "discount": 9500,
+    "tax": 15390,
+    "shipping": 5000,
+    "total": 105890,
     "promoCode": "NOIR10",
     "paymentMethod": "Visa Ending 9010",
     "status": "Pending",
-    "date": "2026-07-06T19:26:51.141Z"
+    "date": "2026-07-06T21:01:15.941Z"
   }
 ]

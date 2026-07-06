@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
+import { formatPrice } from '../utils.js';
 
-export default function CustomerShop({ onProductSelect, cartItemsCount, onCartOpen, onNavigateToAdmin }) {
+export default function CustomerShop({ onProductSelect, cartItemsCount, onCartOpen, onNavigateToAdmin, storeConfig }) {
   const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -194,7 +195,7 @@ export default function CustomerShop({ onProductSelect, cartItemsCount, onCartOp
                       {product.collections[0] || 'NOIR VIRTU'}
                     </div>
                     <h3 className="product-title">{product.name}</h3>
-                    <div className="product-price">${product.price.toFixed(2)}</div>
+                    <div className="product-price">{formatPrice(product.price, storeConfig.currency)}</div>
                   </div>
                 </div>
               ))}

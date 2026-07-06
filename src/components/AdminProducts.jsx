@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
+import { formatPrice } from '../utils.js';
 
-export default function AdminProducts({ products, onProductCreated, onProductUpdated, onProductDeleted }) {
+export default function AdminProducts({ products, onProductCreated, onProductUpdated, onProductDeleted, storeConfig }) {
   const [search, setSearch] = useState('');
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingProduct, setEditingProduct] = useState(null);
@@ -178,7 +179,7 @@ export default function AdminProducts({ products, onProductCreated, onProductUpd
                     </td>
                     <td style={{ fontWeight: '500' }}>{p.name}</td>
                     <td style={{ color: 'var(--text-secondary)' }}>{p.categories.join(', ')}</td>
-                    <td style={{ fontFamily: 'var(--font-mono)' }}>${p.price.toFixed(2)}</td>
+                    <td style={{ fontFamily: 'var(--font-mono)' }}>{formatPrice(p.price, storeConfig.currency)}</td>
                     <td style={{ fontFamily: 'var(--font-mono)' }}>
                       <span style={{ color: p.stock === 0 ? 'var(--danger)' : p.stock <= 5 ? 'var(--warning)' : 'inherit' }}>
                         {p.stock}
@@ -263,7 +264,7 @@ export default function AdminProducts({ products, onProductCreated, onProductUpd
 
               <div className="form-row">
                 <div className="form-group">
-                  <label htmlFor="prod-price">Price ($ USD)</label>
+                  <label htmlFor="prod-price">Price ({storeConfig.currency})</label>
                   <input 
                     type="number" 
                     step="0.01"

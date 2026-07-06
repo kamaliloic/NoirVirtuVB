@@ -1,9 +1,9 @@
 {
-  "name": "NOIR VIRTU FLAGSHIP",
-  "address": "KIGALI RWANDA",
-  "phone": "+1 (323) 555-0198",
-  "currency": "RWF",
-  "taxRate": 8.25,
-  "shippingFee": 10,
-  "freeShippingThreshold": 150
+  "name": "NOIR VIRTU KIGALI",
+  "address": "Kigali Heights, 2nd Floor, Kigali, Rwanda",
+  "phone": "+250 788 555 123",
+  "currency": "Rwf",
+  "taxRate": 18,
+  "shippingFee": 5000,
+  "freeShippingThreshold": 150000
 }

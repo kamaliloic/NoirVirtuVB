@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { formatPrice } from '../utils.js';
 
 export default function AdminOrders({ orders, onOrderStatusUpdated, onPrintReceipt, storeConfig }) {
   const [statusFilter, setStatusFilter] = useState('ALL');
@@ -101,7 +102,7 @@ export default function AdminOrders({ orders, onOrderStatusUpdated, onPrintRecei
                       <div style={{ fontSize: '0.75rem', color: 'var(--text-secondary)' }}>{o.customer.email}</div>
                     </td>
                     <td>{o.items.reduce((sum, item) => sum + item.quantity, 0)} items</td>
-                    <td style={{ fontFamily: 'var(--font-mono)', fontWeight: '500' }}>${o.total.toFixed(2)}</td>
+                    <td style={{ fontFamily: 'var(--font-mono)', fontWeight: '500' }}>{formatPrice(o.total, storeConfig.currency)}</td>
                     <td>
                       <span className={getBadgeClass(o.status)}>{o.status}</span>
                     </td>
@@ -184,8 +185,8 @@ export default function AdminOrders({ orders, onOrderStatusUpdated, onPrintRecei
                         <td style={{ fontWeight: 'bold' }}>{item.name}</td>
                         <td style={{ fontFamily: 'var(--font-mono)' }}>{item.size}</td>
                         <td style={{ fontFamily: 'var(--font-mono)' }}>{item.quantity}</td>
-                        <td style={{ fontFamily: 'var(--font-mono)' }}>${item.price.toFixed(2)}</td>
-                        <td style={{ fontFamily: 'var(--font-mono)' }}>${(item.price * item.quantity).toFixed(2)}</td>
+                        <td style={{ fontFamily: 'var(--font-mono)' }}>{formatPrice(item.price, storeConfig.currency)}</td>
+                        <td style={{ fontFamily: 'var(--font-mono)' }}>{formatPrice(item.price * item.quantity, storeConfig.currency)}</td>
                       </tr>
                     ))}
                   </tbody>
@@ -197,25 +198,25 @@ export default function AdminOrders({ orders, onOrderStatusUpdated, onPrintRecei
             <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem', alignSelf: 'flex-end', minWidth: '240px', fontSize: '0.85rem', borderTop: '1px solid var(--border-color)', paddingTop: '1rem' }}>
               <div className="summary-row">
                 <span style={{ color: 'var(--text-secondary)' }}>Items Subtotal:</span>
-                <span style={{ fontFamily: 'var(--font-mono)' }}>${selectedOrder.subtotal.toFixed(2)}</span>
+                <span style={{ fontFamily: 'var(--font-mono)' }}>{formatPrice(selectedOrder.subtotal, storeConfig.currency)}</span>
               </div>
               {selectedOrder.discount > 0 && (
                 <div className="summary-row" style={{ color: 'var(--success)' }}>
                   <span>Discount ({selectedOrder.promoCode}):</span>
-                  <span style={{ fontFamily: 'var(--font-mono)' }}>-${selectedOrder.discount.toFixed(2)}</span>
+                  <span style={{ fontFamily: 'var(--font-mono)' }}>-{formatPrice(selectedOrder.discount, storeConfig.currency)}</span>
                 </div>
               )}
               <div className="summary-row">
                 <span style={{ color: 'var(--text-secondary)' }}>Shipping Charges:</span>
-                <span style={{ fontFamily: 'var(--font-mono)' }}>${selectedOrder.shipping.toFixed(2)}</span>
+                <span style={{ fontFamily: 'var(--font-mono)' }}>{formatPrice(selectedOrder.shipping, storeConfig.currency)}</span>
               </div>
               <div className="summary-row">
                 <span style={{ color: 'var(--text-secondary)' }}>Taxes:</span>
-                <span style={{ fontFamily: 'var(--font-mono)' }}>${selectedOrder.tax.toFixed(2)}</span>
+                <span style={{ fontFamily: 'var(--font-mono)' }}>{formatPrice(selectedOrder.tax, storeConfig.currency)}</span>
               </div>
               <div className="summary-row total-row" style={{ marginTop: '0.5rem', paddingTop: '0.5rem' }}>
                 <span>Grand Total:</span>
-                <span style={{ fontFamily: 'var(--font-mono)' }}>${selectedOrder.total.toFixed(2)}</span>
+                <span style={{ fontFamily: 'var(--font-mono)' }}>{formatPrice(selectedOrder.total, storeConfig.currency)}</span>
               </div>
             </div>
 
