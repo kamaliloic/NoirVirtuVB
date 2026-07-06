@@ -17,7 +17,14 @@
     "code": "STREET50",
     "type": "fixed",
     "value": 50000,
-    "active": false,
+    "active": true,
     "description": "Save 50,000 Rwf on any purchase (currently inactive)."
+  },
+  {
+    "code": "FRIDAY60",
+    "type": "percent",
+    "value": 70,
+    "active": true,
+    "description": "Black Friday"
   }
 ]

@@ -1,12 +1,15 @@
 import express from 'express';
 import cors from 'cors';
+import path from 'path';
+import fs from 'fs';
 import { db } from './db.js';
 
 const app = express();
 const PORT = process.env.PORT || 5001;
 
 app.use(cors());
-app.use(express.json());
+app.use(express.json({ limit: '10mb' }));
+app.use(express.urlencoded({ limit: '10mb', extended: true }));
 
 // --- Products Endpoints ---
 app.get('/api/products', async (req, res) => {
@@ -398,6 +401,36 @@ app.get('/api/analytics', async (req, res) => {
   } catch (err) {
     console.error('Failed to aggregate analytics:', err);
     res.status(500).json({ error: 'Failed to retrieve analytics data' });
+  }
+});
+
+// --- File Upload Endpoint ---
+app.post('/api/upload', async (req, res) => {
+  try {
+    const { name, data } = req.body;
+    if (!name || !data) {
+      return res.status(400).json({ error: 'Missing name or data' });
+    }
+
+    const buffer = Buffer.from(data, 'base64');
+    const uploadDir = path.join(process.cwd(), 'public', 'images', 'uploads');
+    
+    // Create directory if it does not exist
+    await fs.promises.mkdir(uploadDir, { recursive: true });
+
+    // Generate unique safe name
+    const sanitizedName = name.replace(/[^a-zA-Z0-9.\-_]/g, '');
+    const filename = `${Date.now()}-${sanitizedName}`;
+    const filePath = path.join(uploadDir, filename);
+
+    // Save buffer as file
+    await fs.promises.writeFile(filePath, buffer);
+
+    // Return the relative Vite public asset path
+    res.json({ url: `/images/uploads/${filename}` });
+  } catch (err) {
+    console.error('Upload error:', err);
+    res.status(500).json({ error: 'Failed to process file upload' });
   }
 });
 

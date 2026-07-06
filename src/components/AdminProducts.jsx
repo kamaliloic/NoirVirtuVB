@@ -6,6 +6,10 @@ export default function AdminProducts({ products, onProductCreated, onProductUpd
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingProduct, setEditingProduct] = useState(null);
   
+  const [uploading, setUploading] = useState(false);
+  const [uploadError, setUploadError] = useState('');
+  const [dragging, setDragging] = useState(false);
+
   const [formData, setFormData] = useState({
     id: '',
     name: '',
@@ -23,6 +27,79 @@ export default function AdminProducts({ products, onProductCreated, onProductUpd
       ...formData,
       [e.target.name]: e.target.value
     });
+  };
+
+  const processFile = async (file) => {
+    if (!file) return;
+    if (!file.type.startsWith('image/')) {
+      setUploadError('Only image files are supported (PNG, JPG, WEBP, GIF).');
+      return;
+    }
+    
+    setUploading(true);
+    setUploadError('');
+    
+    try {
+      const reader = new FileReader();
+      reader.onload = async (e) => {
+        const base64Data = e.target.result.split(',')[1];
+        try {
+          const res = await fetch('/api/upload', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              name: file.name,
+              type: file.type,
+              data: base64Data
+            })
+          });
+          
+          if (!res.ok) {
+            throw new Error('Server returned error status');
+          }
+          
+          const result = await res.json();
+          setFormData(prev => ({
+            ...prev,
+            images: result.url
+          }));
+        } catch (err) {
+          setUploadError('Failed to upload image to backend.');
+          console.error(err);
+        } finally {
+          setUploading(false);
+        }
+      };
+      reader.readAsDataURL(file);
+    } catch (err) {
+      setUploadError('Failed to read image file.');
+      setUploading(false);
+      console.error(err);
+    }
+  };
+
+  const handleDragOver = (e) => {
+    e.preventDefault();
+    setDragging(true);
+  };
+
+  const handleDragLeave = (e) => {
+    e.preventDefault();
+    setDragging(false);
+  };
+
+  const handleDrop = (e) => {
+    e.preventDefault();
+    setDragging(false);
+    if (e.dataTransfer.files && e.dataTransfer.files[0]) {
+      processFile(e.dataTransfer.files[0]);
+    }
+  };
+
+  const handleFileSelect = (e) => {
+    if (e.target.files && e.target.files[0]) {
+      processFile(e.target.files[0]);
+    }
   };
 
   const openAddModal = () => {
@@ -319,8 +396,8 @@ export default function AdminProducts({ products, onProductCreated, onProductUpd
                 </div>
               </div>
 
-              <div className="form-row">
-                <div className="form-group">
+              <div className="form-row" style={{ gridColumn: 'span 2' }}>
+                <div className="form-group" style={{ width: '100%' }}>
                   <label htmlFor="prod-collections">Collections (Comma Separated)</label>
                   <input 
                     type="text" 
@@ -332,13 +409,110 @@ export default function AdminProducts({ products, onProductCreated, onProductUpd
                     onChange={handleInputChange}
                   />
                 </div>
-                <div className="form-group">
-                  <label htmlFor="prod-images">Image Path</label>
+              </div>
+
+              <div className="form-group" style={{ gridColumn: 'span 2', marginTop: '0.5rem' }}>
+                <label>Product Imagery</label>
+                <div
+                  onDragOver={handleDragOver}
+                  onDragLeave={handleDragLeave}
+                  onDrop={handleDrop}
+                  onClick={() => document.getElementById('file-upload-input').click()}
+                  style={{
+                    border: dragging ? '2px dashed var(--text-primary)' : '1px dashed var(--border-color)',
+                    borderRadius: '4px',
+                    padding: '2.5rem 1rem',
+                    textAlign: 'center',
+                    cursor: 'pointer',
+                    background: dragging ? 'rgba(255, 255, 255, 0.03)' : 'var(--bg-tertiary)',
+                    transition: 'all 0.2s ease',
+                    position: 'relative',
+                    display: 'flex',
+                    flexDirection: 'column',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    minHeight: '160px'
+                  }}
+                >
+                  <input
+                    id="file-upload-input"
+                    type="file"
+                    accept="image/*"
+                    style={{ display: 'none' }}
+                    onChange={handleFileSelect}
+                  />
+                  
+                  {uploading ? (
+                    <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '0.75rem' }}>
+                      <div className="spinner" style={{
+                        width: '28px',
+                        height: '28px',
+                        border: '2px solid rgba(255,255,255,0.1)',
+                        borderTopColor: 'var(--text-primary)',
+                        borderRadius: '50%',
+                        animation: 'spin 0.8s linear infinite'
+                      }}></div>
+                      <span style={{ fontSize: '0.8rem', color: 'var(--text-secondary)' }}>Uploading design files to database...</span>
+                    </div>
+                  ) : formData.images && formData.images !== '/images/placeholder.jpg' ? (
+                    <div style={{ position: 'relative', display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+                      <img
+                        src={formData.images}
+                        alt="Product Preview"
+                        style={{
+                          maxWidth: '140px',
+                          maxHeight: '140px',
+                          objectFit: 'cover',
+                          borderRadius: '4px',
+                          border: '1px solid var(--border-color)',
+                          marginBottom: '0.75rem'
+                        }}
+                      />
+                      <button
+                        type="button"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          setFormData(prev => ({ ...prev, images: '/images/placeholder.jpg' }));
+                        }}
+                        className="btn btn-secondary"
+                        style={{ fontSize: '0.7rem', padding: '0.3rem 0.6rem', width: 'auto' }}
+                      >
+                        Clear Image
+                      </button>
+                    </div>
+                  ) : (
+                    <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+                      <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" style={{ marginBottom: '0.75rem', color: 'var(--text-secondary)' }}>
+                        <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                        <polyline points="17 8 12 3 7 8"></polyline>
+                        <line x1="12" y1="3" x2="12" y2="15"></line>
+                      </svg>
+                      <span style={{ fontSize: '0.85rem', fontWeight: '500', marginBottom: '0.25rem' }}>
+                        Drag & drop apparel layout here
+                      </span>
+                      <span style={{ fontSize: '0.75rem', color: 'var(--text-secondary)' }}>
+                        or click to select from local storage
+                      </span>
+                    </div>
+                  )}
+                </div>
+                
+                {uploadError && (
+                  <div style={{ color: 'var(--danger)', fontSize: '0.75rem', marginTop: '0.5rem', fontWeight: '500' }}>
+                    ⚠️ {uploadError}
+                  </div>
+                )}
+                
+                <div style={{ marginTop: '1rem' }}>
+                  <label htmlFor="prod-images" style={{ fontSize: '0.75rem', color: 'var(--text-secondary)' }}>
+                    Or enter manual image path/URL:
+                  </label>
                   <input 
                     type="text" 
                     name="images" 
                     id="prod-images"
                     className="form-input" 
+                    style={{ marginTop: '0.25rem' }}
                     placeholder="/images/hoodie_black.jpg"
                     value={formData.images}
                     onChange={handleInputChange}

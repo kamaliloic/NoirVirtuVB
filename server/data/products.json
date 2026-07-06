@@ -27,7 +27,7 @@
     "id": "NOIR-002",
     "name": "Vandal Cargo Pants",
     "description": "Technical street-ready cargo pants crafted from durable, water-resistant micro-ripstop nylon. Multi-pocket design featuring 3D utility side pockets, metal D-ring hardware, adjustable drawstring waist and leg openings for customizable fits. Reinforced knee panels for durability.",
-    "price": 125000,
+    "price": 125000000000000000000,
     "images": [
       "/images/cargo_pants.jpg"
     ],
@@ -40,7 +40,7 @@
       "Bottoms",
       "Pants"
     ],
-    "stock": 8,
+    "stock": 9,
     "collections": [
       "The Eighth Archive"
     ]
@@ -63,7 +63,7 @@
       "Tops",
       "Tees"
     ],
-    "stock": 25,
+    "stock": 19,
     "collections": [
       "The Eighth Archive",
       "New Arrivals"
