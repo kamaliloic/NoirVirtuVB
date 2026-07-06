@@ -1,0 +1,23 @@
+[
+  {
+    "code": "NOIR10",
+    "type": "percent",
+    "value": 10,
+    "active": true,
+    "description": "10% off storewide for the opening week."
+  },
+  {
+    "code": "VIRTU20",
+    "type": "percent",
+    "value": 20,
+    "active": true,
+    "description": "20% off for brand ambassadors and vip members."
+  },
+  {
+    "code": "STREET50",
+    "type": "fixed",
+    "value": 50,
+    "active": false,
+    "description": "Save $50 on any purchase (currently inactive)."
+  }
+]

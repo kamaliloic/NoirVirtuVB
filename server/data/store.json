@@ -1,0 +1,9 @@
+{
+  "name": "NOIR VIRTU FLAGSHIP",
+  "address": "KIGALI RWANDA",
+  "phone": "+1 (323) 555-0198",
+  "currency": "RWF",
+  "taxRate": 8.25,
+  "shippingFee": 10,
+  "freeShippingThreshold": 150
+}
