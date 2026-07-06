@@ -332,7 +332,12 @@ export default function App() {
                   className={`admin-nav-item ${adminTab === 'dashboard' ? 'active' : ''}`}
                   onClick={() => setAdminTab('dashboard')}
                 >
-                  📊 Dashboard Overview
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round" style={{ flexShrink: 0 }}>
+                    <line x1="18" y1="20" x2="18" y2="10"></line>
+                    <line x1="12" y1="20" x2="12" y2="4"></line>
+                    <line x1="6" y1="20" x2="6" y2="14"></line>
+                  </svg>
+                  Dashboard Overview
                 </button>
               </li>
               <li>
@@ -340,7 +345,13 @@ export default function App() {
                   className={`admin-nav-item ${adminTab === 'products' ? 'active' : ''}`}
                   onClick={() => setAdminTab('products')}
                 >
-                  👕 Products Manager
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round" style={{ flexShrink: 0 }}>
+                    <path d="M12 2a3 3 0 0 0-3 3h6a3 3 0 0 0-3-3z" />
+                    <path d="M22 10a4 4 0 0 1-4 4H6a4 4 0 0 1-4-4V7a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v3z" />
+                    <path d="M12 14v7" />
+                    <path d="M9 21h6" />
+                  </svg>
+                  Products Manager
                 </button>
               </li>
               <li>
@@ -348,7 +359,12 @@ export default function App() {
                   className={`admin-nav-item ${adminTab === 'orders' ? 'active' : ''}`}
                   onClick={() => setAdminTab('orders')}
                 >
-                  📦 Orders & Invoices
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round" style={{ flexShrink: 0 }}>
+                    <path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"></path>
+                    <polyline points="3.27 6.96 12 12.01 20.73 6.96"></polyline>
+                    <line x1="12" y1="22.08" x2="12" y2="12"></line>
+                  </svg>
+                  Orders & Invoices
                 </button>
               </li>
               <li>
@@ -356,7 +372,11 @@ export default function App() {
                   className={`admin-nav-item ${adminTab === 'promotions' ? 'active' : ''}`}
                   onClick={() => setAdminTab('promotions')}
                 >
-                  🏷️ VIP Promotions
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round" style={{ flexShrink: 0 }}>
+                    <path d="M20.59 13.41l-7.17 7.17a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82z"></path>
+                    <line x1="7" y1="7" x2="7.01" y2="7"></line>
+                  </svg>
+                  VIP Promotions
                 </button>
               </li>
               <li>
@@ -364,7 +384,11 @@ export default function App() {
                   className={`admin-nav-item ${adminTab === 'settings' ? 'active' : ''}`}
                   onClick={() => setAdminTab('settings')}
                 >
-                  ⚙️ Store Settings
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round" style={{ flexShrink: 0 }}>
+                    <circle cx="12" cy="12" r="3"></circle>
+                    <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"></path>
+                  </svg>
+                  Store Settings
                 </button>
               </li>
             </ul>
