@@ -8,11 +8,15 @@ import AdminProducts from './components/AdminProducts';
 import AdminOrders from './components/AdminOrders';
 import AdminPromotions from './components/AdminPromotions';
 import AdminSettings from './components/AdminSettings';
+import AdminLogin from './components/AdminLogin';
 
 export default function App() {
   // Navigation & Routing States
   const [view, setView] = useState('shop'); // 'shop' | 'checkout' | 'receipt' | 'admin'
   const [adminTab, setAdminTab] = useState('dashboard'); // 'dashboard' | 'products' | 'orders' | 'promotions' | 'settings'
+  const [isAdminAuthenticated, setIsAdminAuthenticated] = useState(() => {
+    return sessionStorage.getItem('noir_admin_authenticated') === 'true';
+  });
   
   // Data Caches
   const [products, setProducts] = useState([]);
@@ -318,108 +322,141 @@ export default function App() {
 
       {/* 4. ADMIN PORTAL VIEW */}
       {view === 'admin' && (
-        <div className="admin-layout">
-          {/* SIDEBAR */}
-          <aside className="admin-sidebar">
-            <div className="admin-sidebar-header">
-              <span className="admin-logo">NOIR VIRTU</span>
-              <span className="admin-logo-badge">Admin</span>
-            </div>
-
-            <ul className="admin-nav">
-              <li>
-                <button 
-                  className={`admin-nav-item ${adminTab === 'dashboard' ? 'active' : ''}`}
-                  onClick={() => setAdminTab('dashboard')}
-                >
-                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round" style={{ flexShrink: 0 }}>
-                    <line x1="18" y1="20" x2="18" y2="10"></line>
-                    <line x1="12" y1="20" x2="12" y2="4"></line>
-                    <line x1="6" y1="20" x2="6" y2="14"></line>
-                  </svg>
-                  Dashboard Overview
-                </button>
-              </li>
-              <li>
-                <button 
-                  className={`admin-nav-item ${adminTab === 'products' ? 'active' : ''}`}
-                  onClick={() => setAdminTab('products')}
-                >
-                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round" style={{ flexShrink: 0 }}>
-                    <path d="M12 2a3 3 0 0 0-3 3h6a3 3 0 0 0-3-3z" />
-                    <path d="M22 10a4 4 0 0 1-4 4H6a4 4 0 0 1-4-4V7a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v3z" />
-                    <path d="M12 14v7" />
-                    <path d="M9 21h6" />
-                  </svg>
-                  Products Manager
-                </button>
-              </li>
-              <li>
-                <button 
-                  className={`admin-nav-item ${adminTab === 'orders' ? 'active' : ''}`}
-                  onClick={() => setAdminTab('orders')}
-                >
-                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round" style={{ flexShrink: 0 }}>
-                    <path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"></path>
-                    <polyline points="3.27 6.96 12 12.01 20.73 6.96"></polyline>
-                    <line x1="12" y1="22.08" x2="12" y2="12"></line>
-                  </svg>
-                  Orders & Invoices
-                </button>
-              </li>
-              <li>
-                <button 
-                  className={`admin-nav-item ${adminTab === 'promotions' ? 'active' : ''}`}
-                  onClick={() => setAdminTab('promotions')}
-                >
-                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round" style={{ flexShrink: 0 }}>
-                    <path d="M20.59 13.41l-7.17 7.17a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82z"></path>
-                    <line x1="7" y1="7" x2="7.01" y2="7"></line>
-                  </svg>
-                  VIP Promotions
-                </button>
-              </li>
-              <li>
-                <button 
-                  className={`admin-nav-item ${adminTab === 'settings' ? 'active' : ''}`}
-                  onClick={() => setAdminTab('settings')}
-                >
-                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round" style={{ flexShrink: 0 }}>
-                    <circle cx="12" cy="12" r="3"></circle>
-                    <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"></path>
-                  </svg>
-                  Store Settings
-                </button>
-              </li>
-            </ul>
-
-            <button 
-              className="btn btn-secondary" 
-              style={{ marginTop: 'auto', width: '100%', fontSize: '0.8rem', padding: '0.6rem' }}
-              onClick={() => setView('shop')}
-            >
-              ← Back to Shop
-            </button>
-          </aside>
-
-          {/* MAIN SPACE */}
-          <main className="admin-main">
-            <header className="admin-header">
-              <h2 className="admin-title">
-                {adminTab === 'dashboard' && 'Dashboard Overview'}
-                {adminTab === 'products' && 'Clothing Catalog Manager'}
-                {adminTab === 'orders' && 'Order Invoicing Tracker'}
-                {adminTab === 'promotions' && 'Promo Code Campaigns'}
-                {adminTab === 'settings' && 'Store Configuration settings'}
-              </h2>
-              <div style={{ color: 'var(--text-secondary)', fontSize: '0.85rem', fontFamily: 'var(--font-mono)' }}>
-                System: ONLINE // DB: LOCAL FS
+        !isAdminAuthenticated ? (
+          <AdminLogin 
+            onLoginSuccess={() => {
+              setIsAdminAuthenticated(true);
+              sessionStorage.setItem('noir_admin_authenticated', 'true');
+              addToast('Welcome back, Administrator.', 'success');
+            }} 
+            onCancel={() => setView('shop')} 
+          />
+        ) : (
+          <div className="admin-layout">
+            {/* SIDEBAR */}
+            <aside className="admin-sidebar">
+              <div className="admin-sidebar-header">
+                <span className="admin-logo">NOIR VIRTU</span>
+                <span className="admin-logo-badge">Admin</span>
               </div>
-            </header>
-            
-            {renderAdminTab()}
-          </main>
-        </div>
+
+              <ul className="admin-nav">
+                <li>
+                  <button 
+                    className={`admin-nav-item ${adminTab === 'dashboard' ? 'active' : ''}`}
+                    onClick={() => setAdminTab('dashboard')}
+                  >
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round" style={{ flexShrink: 0 }}>
+                      <line x1="18" y1="20" x2="18" y2="10"></line>
+                      <line x1="12" y1="20" x2="12" y2="4"></line>
+                      <line x1="6" y1="20" x2="6" y2="14"></line>
+                    </svg>
+                    Dashboard Overview
+                  </button>
+                </li>
+                <li>
+                  <button 
+                    className={`admin-nav-item ${adminTab === 'products' ? 'active' : ''}`}
+                    onClick={() => setAdminTab('products')}
+                  >
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round" style={{ flexShrink: 0 }}>
+                      <path d="M12 2a3 3 0 0 0-3 3h6a3 3 0 0 0-3-3z" />
+                      <path d="M22 10a4 4 0 0 1-4 4H6a4 4 0 0 1-4-4V7a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v3z" />
+                      <path d="M12 14v7" />
+                      <path d="M9 21h6" />
+                    </svg>
+                    Products Manager
+                  </button>
+                </li>
+                <li>
+                  <button 
+                    className={`admin-nav-item ${adminTab === 'orders' ? 'active' : ''}`}
+                    onClick={() => setAdminTab('orders')}
+                  >
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round" style={{ flexShrink: 0 }}>
+                      <path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"></path>
+                      <polyline points="3.27 6.96 12 12.01 20.73 6.96"></polyline>
+                      <line x1="12" y1="22.08" x2="12" y2="12"></line>
+                    </svg>
+                    Orders & Invoices
+                  </button>
+                </li>
+                <li>
+                  <button 
+                    className={`admin-nav-item ${adminTab === 'promotions' ? 'active' : ''}`}
+                    onClick={() => setAdminTab('promotions')}
+                  >
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round" style={{ flexShrink: 0 }}>
+                      <path d="M20.59 13.41l-7.17 7.17a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82z"></path>
+                      <line x1="7" y1="7" x2="7.01" y2="7"></line>
+                    </svg>
+                    VIP Promotions
+                  </button>
+                </li>
+                <li>
+                  <button 
+                    className={`admin-nav-item ${adminTab === 'settings' ? 'active' : ''}`}
+                    onClick={() => setAdminTab('settings')}
+                  >
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round" style={{ flexShrink: 0 }}>
+                      <circle cx="12" cy="12" r="3"></circle>
+                      <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"></path>
+                    </svg>
+                    Store Settings
+                  </button>
+                </li>
+              </ul>
+
+              <div style={{ marginTop: 'auto', display: 'flex', flexDirection: 'column', gap: '0.75rem', width: '100%' }}>
+                <button 
+                  className="btn btn-secondary" 
+                  style={{ width: '100%', fontSize: '0.8rem', padding: '0.6rem' }}
+                  onClick={() => setView('shop')}
+                >
+                  ← Back to Shop
+                </button>
+                <button 
+                  className="btn" 
+                  style={{
+                    width: '100%',
+                    fontSize: '0.8rem',
+                    padding: '0.6rem',
+                    backgroundColor: 'var(--bg-tertiary)',
+                    border: '1px solid var(--border-color)',
+                    color: 'var(--text-secondary)',
+                    cursor: 'pointer'
+                  }}
+                  onClick={() => {
+                    setIsAdminAuthenticated(false);
+                    sessionStorage.removeItem('noir_admin_authenticated');
+                    setView('shop');
+                    addToast('Logged out of Admin Portal.', 'info');
+                  }}
+                >
+                  Log Out
+                </button>
+              </div>
+            </aside>
+
+            {/* MAIN SPACE */}
+            <main className="admin-main">
+              <header className="admin-header">
+                <h2 className="admin-title">
+                  {adminTab === 'dashboard' && 'Dashboard Overview'}
+                  {adminTab === 'products' && 'Clothing Catalog Manager'}
+                  {adminTab === 'orders' && 'Order Invoicing Tracker'}
+                  {adminTab === 'promotions' && 'Promo Code Campaigns'}
+                  {adminTab === 'settings' && 'Store Configuration settings'}
+                </h2>
+                <div style={{ color: 'var(--text-secondary)', fontSize: '0.85rem', fontFamily: 'var(--font-mono)' }}>
+                  System: ONLINE // DB: LOCAL FS
+                </div>
+              </header>
+              
+              {renderAdminTab()}
+            </main>
+          </div>
+        )
       )}
 
       {/* --- CART DRAWER OVERLAY --- */}

@@ -5,5 +5,7 @@
   "currency": "Rwf",
   "taxRate": 18,
   "shippingFee": 5000,
-  "freeShippingThreshold": 150000
+  "freeShippingThreshold": 150000,
+  "adminEmail": "admin@noirvirtu.com",
+  "adminPassword": "admin123"
 }

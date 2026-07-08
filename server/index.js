@@ -304,13 +304,34 @@ app.put('/api/store', async (req, res) => {
       currency: req.body.currency || config.currency,
       taxRate: req.body.taxRate !== undefined ? parseFloat(req.body.taxRate) : config.taxRate,
       shippingFee: req.body.shippingFee !== undefined ? parseFloat(req.body.shippingFee) : config.shippingFee,
-      freeShippingThreshold: req.body.freeShippingThreshold !== undefined ? parseFloat(req.body.freeShippingThreshold) : config.freeShippingThreshold
+      freeShippingThreshold: req.body.freeShippingThreshold !== undefined ? parseFloat(req.body.freeShippingThreshold) : config.freeShippingThreshold,
+      adminEmail: req.body.adminEmail !== undefined ? req.body.adminEmail : (config.adminEmail || 'admin@noirvirtu.com'),
+      adminPassword: req.body.adminPassword !== undefined ? req.body.adminPassword : (config.adminPassword || 'admin')
     };
 
     await db.saveStoreConfig(updatedConfig);
     res.json(updatedConfig);
   } catch (err) {
     res.status(500).json({ error: 'Failed to update store configuration' });
+  }
+});
+
+// --- Admin Authentication Endpoint ---
+app.post('/api/admin/login', async (req, res) => {
+  try {
+    const { email, password } = req.body;
+    const config = await db.getStoreConfig();
+    
+    const expectedEmail = config.adminEmail || 'admin@noirvirtu.com';
+    const expectedPassword = config.adminPassword || 'admin';
+    
+    if (email === expectedEmail && password === expectedPassword) {
+      res.json({ success: true, token: 'nv-session-tok-' + Date.now() });
+    } else {
+      res.status(401).json({ error: 'Invalid email or password' });
+    }
+  } catch (err) {
+    res.status(500).json({ error: 'Authentication failed' });
   }
 });
 

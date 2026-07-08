@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 
 export default function AdminSettings({ storeConfig, onConfigUpdated }) {
+  const [showPassword, setShowPassword] = useState(false);
   const [formData, setFormData] = useState({
     name: storeConfig.name || 'NOIR VIRTU FLAGSHIP',
     address: storeConfig.address || '712 Melrose Ave, Los Angeles, CA 90046',
@@ -8,7 +9,9 @@ export default function AdminSettings({ storeConfig, onConfigUpdated }) {
     currency: storeConfig.currency || 'USD',
     taxRate: storeConfig.taxRate !== undefined ? storeConfig.taxRate : 8.25,
     shippingFee: storeConfig.shippingFee !== undefined ? storeConfig.shippingFee : 10.00,
-    freeShippingThreshold: storeConfig.freeShippingThreshold !== undefined ? storeConfig.freeShippingThreshold : 150.00
+    freeShippingThreshold: storeConfig.freeShippingThreshold !== undefined ? storeConfig.freeShippingThreshold : 150.00,
+    adminEmail: storeConfig.adminEmail || 'admin@noirvirtu.com',
+    adminPassword: storeConfig.adminPassword || 'admin'
   });
 
   const [saving, setSaving] = useState(false);
@@ -153,6 +156,71 @@ export default function AdminSettings({ storeConfig, onConfigUpdated }) {
             value={formData.freeShippingThreshold}
             onChange={handleInputChange}
           />
+        </div>
+
+        <div style={{ borderTop: '1px dashed var(--border-color)', paddingTop: '1.5rem', marginTop: '1.5rem' }}>
+          <h4 style={{
+            textTransform: 'uppercase',
+            fontSize: '0.75rem',
+            letterSpacing: '0.1em',
+            color: 'var(--text-primary)',
+            marginBottom: '1rem',
+            fontFamily: 'var(--font-display)',
+            fontWeight: '700'
+          }}>
+            Admin Portal Access Credentials
+          </h4>
+          
+          <div className="form-row">
+            <div className="form-group">
+              <label htmlFor="admin-email-setting">Admin Login Email</label>
+              <input 
+                type="email" 
+                name="adminEmail" 
+                id="admin-email-setting"
+                className="form-input" 
+                required 
+                value={formData.adminEmail}
+                onChange={handleInputChange}
+                style={{ backgroundColor: 'var(--bg-primary)' }}
+              />
+            </div>
+            <div className="form-group">
+              <label htmlFor="admin-password-setting">Admin Login Passcode</label>
+              <div style={{ position: 'relative' }}>
+                <input 
+                  type={showPassword ? "text" : "password"} 
+                  name="adminPassword" 
+                  id="admin-password-setting"
+                  className="form-input" 
+                  required 
+                  value={formData.adminPassword}
+                  onChange={handleInputChange}
+                  style={{ paddingRight: '3.5rem', backgroundColor: 'var(--bg-primary)' }}
+                />
+                <button
+                  type="button"
+                  onClick={() => setShowPassword(!showPassword)}
+                  style={{
+                    position: 'absolute',
+                    right: '1rem',
+                    top: '50%',
+                    transform: 'translateY(-50%)',
+                    background: 'none',
+                    border: 'none',
+                    color: 'var(--text-secondary)',
+                    cursor: 'pointer',
+                    fontSize: '0.7rem',
+                    textTransform: 'uppercase',
+                    letterSpacing: '0.05em',
+                    fontWeight: '600'
+                  }}
+                >
+                  {showPassword ? 'Hide' : 'Show'}
+                </button>
+              </div>
+            </div>
+          </div>
         </div>
 
         {message && (
