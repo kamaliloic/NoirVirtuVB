@@ -1356,6 +1356,8 @@ a {
 .admin-modal {
   width: 90%;
   max-width: 600px;
+  max-height: 90vh;
+  overflow-y: auto;
   background-color: var(--bg-secondary);
   border: 1px solid var(--border-color);
   padding: 2.5rem;
@@ -1437,4 +1439,8 @@ a {
   .thermal-receipt::before, .thermal-receipt::after {
     display: none !important;
   }
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
 }

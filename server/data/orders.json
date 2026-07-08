@@ -605,5 +605,92 @@
     "paymentMethod": "Visa Ending 9010",
     "status": "Pending",
     "date": "2026-07-06T21:01:15.941Z"
+  },
+  {
+    "id": "NV-1020",
+    "customer": {
+      "name": "NOIR VIRTU FLAGSHIP",
+      "email": "marcus@vance.co",
+      "address": "KIGALI RWANDA",
+      "city": "Kigali",
+      "state": "KN",
+      "postalCode": "0000"
+    },
+    "items": [
+      {
+        "productId": "NOIR-002",
+        "name": "Vandal Cargo Pants",
+        "size": "XL",
+        "quantity": 4,
+        "price": 125000
+      }
+    ],
+    "subtotal": 500000,
+    "discount": 350000,
+    "tax": 27000,
+    "shipping": 0,
+    "total": 177000,
+    "promoCode": "FRIDAY60",
+    "paymentMethod": "Visa Ending 9010",
+    "status": "Pending",
+    "date": "2026-07-06T21:33:23.297Z"
+  },
+  {
+    "id": "NV-1021",
+    "customer": {
+      "name": "Angelo",
+      "email": "angelo@gmail.com",
+      "address": "KIGALI RWANDA",
+      "city": "Kigali",
+      "state": "KN",
+      "postalCode": "00000"
+    },
+    "items": [
+      {
+        "productId": "NOIR-003",
+        "name": "Memento Mori Graphic Tee",
+        "size": "L",
+        "quantity": 6,
+        "price": 45000
+      }
+    ],
+    "subtotal": 270000,
+    "discount": 189000,
+    "tax": 14580,
+    "shipping": 0,
+    "total": 95580,
+    "promoCode": "FRIDAY60",
+    "paymentMethod": "Visa Ending 9010",
+    "status": "Pending",
+    "date": "2026-07-06T21:34:51.154Z"
+  },
+  {
+    "id": "NV-1022",
+    "customer": {
+      "name": "Angelo",
+      "email": "angelo@gmail.com",
+      "address": "KIGALI RWANDA",
+      "city": "Kigali",
+      "state": "KN",
+      "postalCode": "0000"
+    },
+    "items": [
+      {
+        "productId": "NOIR-002",
+        "name": "Vandal Cargo Pants",
+        "size": "L",
+        "quantity": 1,
+        "price": 125000000000000000000
+      }
+    ],
+    "subtotal": 125000000000000000000,
+    "discount": 87500000000000000000,
+    "tax": 6750000000000000000,
+    "shipping": 0,
+    "total": 44250000000000000000,
+    "promoCode": "FRIDAY60",
+    "paymentMethod": "Visa Ending 9010",
+    "status": "Cancelled",
+    "date": "2026-07-06T21:43:00.705Z"
   }
 ]
