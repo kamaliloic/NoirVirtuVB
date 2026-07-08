@@ -1,14 +1,101 @@
 [
   {
-    "id": "NOIR-001",
-    "name": "Virtu Heavy Graphic Hoodie",
-    "description": "Premium 450GSM ultra-heavy cotton fleece hoodie. Features high-density screenprinted signature NOIR typography on the front chest and large gothic arch sigil graphics across the back. Dropped shoulders, double-lined hood, and thick ribbed cuffs. Designed for a structured, oversized fit.",
-    "price": 95000,
+    "id": "Noir Teea 1",
+    "name": "Distressed Tee shirt",
+    "description": "A T shirt that fits your soul",
+    "price": 17000,
     "images": [
-      "/images/hoodie_black.jpg"
+      "/NVIMAGES/nv hands back.jpg"
+    ],
+    "sizes": [
+      "M",
+      "L",
+      "XL"
+    ],
+    "categories": [
+      "Tops"
+    ],
+    "stock": 3,
+    "collections": [
+      "The Eighth Archive"
+    ]
+  },
+  {
+    "id": "random",
+    "name": "Noir Off Tee",
+    "description": "In memory of Virgil Abloh",
+    "price": 16999.99,
+    "images": [
+      "/images/uploads/1783376575720-NOIROFFTEE.jpg"
     ],
     "sizes": [
       "S",
+      "M",
+      "L",
+      "XL"
+    ],
+    "categories": [
+      "Tops"
+    ],
+    "stock": 12,
+    "collections": [
+      "The Eighth Archive"
+    ]
+  },
+  {
+    "id": "NOIR-TEST-99",
+    "name": "Signature Knit Beanie",
+    "description": "Luxurious fine-ribbed streetwear beanie featuring the signature logo tag.",
+    "price": 25000,
+    "images": [
+      "/images/uploads/1783375693812-beanie.jpg"
+    ],
+    "sizes": [
+      "S",
+      "M",
+      "L"
+    ],
+    "categories": [
+      "Accessories"
+    ],
+    "stock": 35,
+    "collections": [
+      "New Arrivals"
+    ]
+  },
+  {
+    "id": "RANDO",
+    "name": "Noir Off Tee",
+    "description": "BEST TEEE",
+    "price": 16000,
+    "images": [
+      "/images/uploads/1783375994007-noiroffback.png"
+    ],
+    "sizes": [
+      "S",
+      "M",
+      "L",
+      "XL"
+    ],
+    "categories": [
+      "Tops"
+    ],
+    "stock": 23,
+    "collections": [
+      "The Eighth Archive"
+    ]
+  },
+  {
+    "id": "NOIR-MULTI-77",
+    "name": "Vanguard Multi-Tone Hoodie",
+    "description": "Premium panelled streetwear hoodie featuring multiple photography angles.",
+    "price": 135000,
+    "images": [
+      "/images/uploads/1783377111120-beanie.jpg",
+      "/images/uploads/1783377120531-cargo_pants.jpg",
+      "/images/uploads/1783377129498-graphic_tee.jpg"
+    ],
+    "sizes": [
       "M",
       "L",
       "XL"
@@ -17,99 +104,9 @@
       "Tops",
       "Hoodies"
     ],
-    "stock": 11,
+    "stock": 15,
     "collections": [
-      "The Eighth Archive",
       "Best Sellers"
-    ]
-  },
-  {
-    "id": "NOIR-002",
-    "name": "Vandal Cargo Pants",
-    "description": "Technical street-ready cargo pants crafted from durable, water-resistant micro-ripstop nylon. Multi-pocket design featuring 3D utility side pockets, metal D-ring hardware, adjustable drawstring waist and leg openings for customizable fits. Reinforced knee panels for durability.",
-    "price": 125000000000000000000,
-    "images": [
-      "/images/cargo_pants.jpg"
-    ],
-    "sizes": [
-      "M",
-      "L",
-      "XL"
-    ],
-    "categories": [
-      "Bottoms",
-      "Pants"
-    ],
-    "stock": 9,
-    "collections": [
-      "The Eighth Archive"
-    ]
-  },
-  {
-    "id": "NOIR-003",
-    "name": "Memento Mori Graphic Tee",
-    "description": "240GSM luxury combed cotton tee, heavily washed for an authentic vintage charcoal look. Front features clean corporate brand lettering, while the back features a high-fidelity gothic collage print. Designed with an oversized boxy cut and thick mock-neck collar.",
-    "price": 45000,
-    "images": [
-      "/images/graphic_tee.jpg"
-    ],
-    "sizes": [
-      "S",
-      "M",
-      "L",
-      "XL"
-    ],
-    "categories": [
-      "Tops",
-      "Tees"
-    ],
-    "stock": 19,
-    "collections": [
-      "The Eighth Archive",
-      "New Arrivals"
-    ]
-  },
-  {
-    "id": "NOIR-004",
-    "name": "Sigil Ribbed Beanie",
-    "description": "Thick double-layered ribbed knit watch cap, featuring an embroidered minimalist silver brand sigil emblem on the cuff. Stretch-fit comfort suitable for all sizes. Engineered to retain shape over long-term wear.",
-    "price": 30000,
-    "images": [
-      "/images/beanie.jpg"
-    ],
-    "sizes": [
-      "One Size"
-    ],
-    "categories": [
-      "Accessories",
-      "Headwear"
-    ],
-    "stock": 40,
-    "collections": [
-      "New Arrivals"
-    ]
-  },
-  {
-    "id": "NOIR-005",
-    "name": "Ghost Shell Wind-Jacket",
-    "description": "An ultra-lightweight, semi-translucent technical shell jacket with a matte finish. Features taped inner seams, waterproof zipper sliders, elastic drawcord hood, and an oversized 3M reflective brand layout across the shoulder line for low-light visibility.",
-    "price": 160000,
-    "images": [
-      "/images/windbreaker.jpg"
-    ],
-    "sizes": [
-      "S",
-      "M",
-      "L"
-    ],
-    "categories": [
-      "Tops",
-      "Outerwear"
-    ],
-    "stock": 6,
-    "collections": [
-      "The Eighth Archive",
-      "New Arrivals"
     ]
   }
 ]
