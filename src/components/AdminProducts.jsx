@@ -36,8 +36,8 @@ export default function AdminProducts({ products, onProductCreated, onProductUpd
       return;
     }
 
-    if (formData.images.length >= 3) {
-      setUploadError('At most 3 images are allowed per product.');
+    if (formData.images.length >= 4) {
+      setUploadError('At most 4 images are allowed per product.');
       return;
     }
     
@@ -84,7 +84,7 @@ export default function AdminProducts({ products, onProductCreated, onProductUpd
 
   const handleDragOver = (e) => {
     e.preventDefault();
-    if (formData.images.length < 3 && !uploading) {
+    if (formData.images.length < 4 && !uploading) {
       setDragging(true);
     }
   };
@@ -97,14 +97,14 @@ export default function AdminProducts({ products, onProductCreated, onProductUpd
   const handleDrop = (e) => {
     e.preventDefault();
     setDragging(false);
-    if (formData.images.length >= 3 || uploading) return;
+    if (formData.images.length >= 4 || uploading) return;
     if (e.dataTransfer.files && e.dataTransfer.files[0]) {
       processFile(e.dataTransfer.files[0]);
     }
   };
 
   const handleFileSelect = (e) => {
-    if (formData.images.length >= 3 || uploading) return;
+    if (formData.images.length >= 4 || uploading) return;
     if (e.target.files && e.target.files[0]) {
       processFile(e.target.files[0]);
     }
@@ -422,13 +422,13 @@ export default function AdminProducts({ products, onProductCreated, onProductUpd
               </div>
 
               <div className="form-group" style={{ gridColumn: 'span 2', marginTop: '0.5rem' }}>
-                <label>Product Imagery (At most 3 images)</label>
+                <label>Product Imagery (At most 4 images)</label>
                 <div
                   onDragOver={handleDragOver}
                   onDragLeave={handleDragLeave}
                   onDrop={handleDrop}
                   onClick={() => {
-                    if (formData.images.length < 3 && !uploading) {
+                    if (formData.images.length < 4 && !uploading) {
                       document.getElementById('file-upload-input').click();
                     }
                   }}
@@ -437,7 +437,7 @@ export default function AdminProducts({ products, onProductCreated, onProductUpd
                     borderRadius: '4px',
                     padding: '2rem 1rem',
                     textAlign: 'center',
-                    cursor: formData.images.length < 3 && !uploading ? 'pointer' : 'default',
+                    cursor: formData.images.length < 4 && !uploading ? 'pointer' : 'default',
                     background: dragging ? 'rgba(255, 255, 255, 0.03)' : 'var(--bg-tertiary)',
                     transition: 'all 0.2s ease',
                     position: 'relative',
@@ -446,7 +446,7 @@ export default function AdminProducts({ products, onProductCreated, onProductUpd
                     alignItems: 'center',
                     justifyContent: 'center',
                     minHeight: '130px',
-                    opacity: formData.images.length >= 3 ? 0.7 : 1
+                    opacity: formData.images.length >= 4 ? 0.7 : 1
                   }}
                 >
                   <input
@@ -469,10 +469,10 @@ export default function AdminProducts({ products, onProductCreated, onProductUpd
                       }}></div>
                       <span style={{ fontSize: '0.8rem', color: 'var(--text-secondary)' }}>Uploading design files...</span>
                     </div>
-                  ) : formData.images.length >= 3 ? (
+                  ) : formData.images.length >= 4 ? (
                     <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
                       <span style={{ fontSize: '0.85rem', fontWeight: '500', color: 'var(--text-secondary)', marginBottom: '0.25rem' }}>
-                        Maximum images added (3/3)
+                        Maximum images added (4/4)
                       </span>
                       <span style={{ fontSize: '0.75rem', color: 'var(--text-secondary)' }}>
                         Remove an existing image below to upload a replacement
@@ -486,7 +486,7 @@ export default function AdminProducts({ products, onProductCreated, onProductUpd
                         <line x1="12" y1="3" x2="12" y2="15"></line>
                       </svg>
                       <span style={{ fontSize: '0.85rem', fontWeight: '500', marginBottom: '0.25rem' }}>
-                        Drag & drop apparel layout here ({formData.images.length}/3)
+                        Drag & drop apparel layout here ({formData.images.length}/4)
                       </span>
                       <span style={{ fontSize: '0.75rem', color: 'var(--text-secondary)' }}>
                         or click to select from local storage
@@ -498,7 +498,7 @@ export default function AdminProducts({ products, onProductCreated, onProductUpd
                 {formData.images.length > 0 && (
                   <div style={{ marginTop: '1rem', width: '100%', textAlign: 'left' }}>
                     <div style={{ fontSize: '0.75rem', fontWeight: 'bold', textTransform: 'uppercase', color: 'var(--text-secondary)', marginBottom: '0.5rem' }}>
-                      Added Imagery Confirmation ({formData.images.length}/3)
+                      Added Imagery Confirmation ({formData.images.length}/4)
                     </div>
                     <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
                       {formData.images.map((img, idx) => (

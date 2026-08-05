@@ -15,7 +15,7 @@
     "categories": [
       "Tops"
     ],
-    "stock": 3,
+    "stock": 2,
     "collections": [
       "The Eighth Archive"
     ]
@@ -43,27 +43,6 @@
     ]
   },
   {
-    "id": "NOIR-TEST-99",
-    "name": "Signature Knit Beanie",
-    "description": "Luxurious fine-ribbed streetwear beanie featuring the signature logo tag.",
-    "price": 25000,
-    "images": [
-      "/images/uploads/1783375693812-beanie.jpg"
-    ],
-    "sizes": [
-      "S",
-      "M",
-      "L"
-    ],
-    "categories": [
-      "Accessories"
-    ],
-    "stock": 35,
-    "collections": [
-      "New Arrivals"
-    ]
-  },
-  {
     "id": "RANDO",
     "name": "Noir Off Tee",
     "description": "BEST TEEE",
@@ -83,30 +62,6 @@
     "stock": 23,
     "collections": [
       "The Eighth Archive"
-    ]
-  },
-  {
-    "id": "NOIR-MULTI-77",
-    "name": "Vanguard Multi-Tone Hoodie",
-    "description": "Premium panelled streetwear hoodie featuring multiple photography angles.",
-    "price": 135000,
-    "images": [
-      "/images/uploads/1783377111120-beanie.jpg",
-      "/images/uploads/1783377120531-cargo_pants.jpg",
-      "/images/uploads/1783377129498-graphic_tee.jpg"
-    ],
-    "sizes": [
-      "M",
-      "L",
-      "XL"
-    ],
-    "categories": [
-      "Tops",
-      "Hoodies"
-    ],
-    "stock": 15,
-    "collections": [
-      "Best Sellers"
     ]
   }
 ]

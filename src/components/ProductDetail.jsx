@@ -4,6 +4,7 @@ import { formatPrice } from '../utils.js';
 export default function ProductDetail({ product, onClose, onAddToCart, storeConfig }) {
   const [selectedSize, setSelectedSize] = useState('');
   const [qty, setQty] = useState(1);
+  const [activeImageIdx, setActiveImageIdx] = useState(0);
 
   if (!product) return null;
 
@@ -26,15 +27,40 @@ export default function ProductDetail({ product, onClose, onAddToCart, storeConf
           </svg>
         </button>
 
-        <div className="detail-image-section">
+        <div className="detail-image-section" style={{ display: 'flex', flexDirection: 'column', gap: '1rem', background: '#141416', padding: '1.5rem', justifyContent: 'center' }}>
           <img 
-            src={product.images[0]} 
+            src={product.images && product.images[activeImageIdx] ? product.images[activeImageIdx] : '/images/placeholder.jpg'} 
             alt={product.name} 
             className="detail-img"
+            style={{ width: '100%', height: 'auto', maxHeight: '420px', objectFit: 'cover', border: '1px solid var(--border-color)' }}
             onError={(e) => {
               e.target.src = 'https://images.unsplash.com/photo-1556821840-3a63f95609a7?auto=format&fit=crop&w=600&q=80';
             }}
           />
+          {product.images && product.images.length > 1 && (
+            <div style={{ display: 'flex', gap: '0.5rem', justifyContent: 'center', overflowX: 'auto', paddingBottom: '0.25rem' }}>
+              {product.images.map((img, idx) => (
+                <img 
+                  key={idx}
+                  src={img} 
+                  alt=""
+                  onClick={() => setActiveImageIdx(idx)}
+                  style={{
+                    width: '50px',
+                    height: '60px',
+                    objectFit: 'cover',
+                    border: activeImageIdx === idx ? '2px solid var(--text-primary)' : '1px solid var(--border-color)',
+                    cursor: 'pointer',
+                    opacity: activeImageIdx === idx ? 1 : 0.6,
+                    transition: 'var(--transition-smooth)'
+                  }}
+                  onError={(e) => {
+                    e.target.style.display = 'none';
+                  }}
+                />
+              ))}
+            </div>
+          )}
         </div>
 
         <div className="detail-info-section">

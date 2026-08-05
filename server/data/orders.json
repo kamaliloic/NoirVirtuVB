@@ -692,5 +692,34 @@
     "paymentMethod": "Visa Ending 9010",
     "status": "Cancelled",
     "date": "2026-07-06T21:43:00.705Z"
+  },
+  {
+    "id": "NV-1023",
+    "customer": {
+      "name": "Melane Uwizeyimana",
+      "email": "uwizeyimana@gmail.com",
+      "address": "Karuruma",
+      "city": "Kigali",
+      "state": "Rw",
+      "postalCode": "000000"
+    },
+    "items": [
+      {
+        "productId": "Noir Teea 1",
+        "name": "Distressed Tee shirt",
+        "size": "L",
+        "quantity": 1,
+        "price": 17000
+      }
+    ],
+    "subtotal": 17000,
+    "discount": 0,
+    "tax": 3060,
+    "shipping": 5000,
+    "total": 25060,
+    "promoCode": "",
+    "paymentMethod": "Visa Ending 1231",
+    "status": "Completed",
+    "date": "2026-08-05T18:23:35.154Z"
   }
 ]
