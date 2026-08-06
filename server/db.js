@@ -133,7 +133,6 @@ async function initDb() {
       // Generate some mock orders spanning the past week
       const today = new Date();
       const initialOrders = [];
-      const orderStatuses = ["Completed", "Shipped", "Processing", "Pending"];
       
       const names = ["Marcus Vance", "Elena Rostova", "Kai Tanaka", "Chloe Dubois", "Jaden Cole", "Aria Vance", "Darnell Jackson"];
       const emails = ["marcus@vance.co", "elena.ros@gmail.com", "kai@tanakadesign.jp", "chloe@dubois.fr", "jaden.c@outlook.com", "aria@vance.co", "darnell@j-style.com"];
@@ -213,6 +212,19 @@ async function initDb() {
 // Call on load
 initDb();
 
+const writeQueue = new Map();
+
+async function enqueueWrite(file, task) {
+  const previous = writeQueue.get(file) || Promise.resolve();
+  const next = previous.then(task, task);
+  writeQueue.set(file, next.finally(() => {
+    if (writeQueue.get(file) === next) {
+      writeQueue.delete(file);
+    }
+  }));
+  return next;
+}
+
 // Reads utility
 async function readJson(file) {
   try {
@@ -226,13 +238,18 @@ async function readJson(file) {
 
 // Writes utility
 async function writeJson(file, data) {
-  try {
-    await fs.writeFile(file, JSON.stringify(data, null, 2));
-    return true;
-  } catch (err) {
-    console.error(`Error writing file ${file}:`, err);
-    return false;
-  }
+  return enqueueWrite(file, async () => {
+    try {
+      const content = JSON.stringify(data, null, 2);
+      const tempFile = `${file}.tmp`;
+      await fs.writeFile(tempFile, content, 'utf8');
+      await fs.rename(tempFile, file);
+      return true;
+    } catch (err) {
+      console.error(`Error writing file ${file}:`, err);
+      return false;
+    }
+  });
 }
 
 export const db = {

@@ -170,6 +170,7 @@ export default function AdminProducts({ products, onProductCreated, onProductUpd
                       <img 
                         src={p.images[0]} 
                         alt={p.name} 
+                        loading="lazy"
                         style={{ width: '40px', height: '50px', objectFit: 'cover', border: '1px solid var(--border-color)' }}
                         onError={(e) => {
                           e.target.src = 'https://images.unsplash.com/photo-1556821840-3a63f95609a7?auto=format&fit=crop&w=80&q=80';

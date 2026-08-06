@@ -1,13 +1,13 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, lazy, Suspense } from 'react';
 import CustomerShop from './components/CustomerShop';
 import ProductDetail from './components/ProductDetail';
 import Checkout, { CartDrawer } from './components/Checkout';
 import Receipt from './components/Receipt';
-import AdminDashboard from './components/AdminDashboard';
-import AdminProducts from './components/AdminProducts';
-import AdminOrders from './components/AdminOrders';
-import AdminPromotions from './components/AdminPromotions';
-import AdminSettings from './components/AdminSettings';
+const AdminDashboard = lazy(() => import('./components/AdminDashboard'));
+const AdminProducts = lazy(() => import('./components/AdminProducts'));
+const AdminOrders = lazy(() => import('./components/AdminOrders'));
+const AdminPromotions = lazy(() => import('./components/AdminPromotions'));
+const AdminSettings = lazy(() => import('./components/AdminSettings'));
 
 export default function App() {
   // Navigation & Routing States
@@ -32,21 +32,23 @@ export default function App() {
   const [toasts, setToasts] = useState([]);
 
   useEffect(() => {
-    // Initial fetch of vital data
-    fetchStoreConfig();
-    fetchProducts();
-    fetchPromotions();
+    const loadInitialData = async () => {
+      setLoading(true);
+      try {
+        await Promise.all([fetchStoreConfig(), fetchProducts(), fetchPromotions()]);
+      } finally {
+        setLoading(false);
+      }
+    };
+    loadInitialData();
   }, []);
 
-  // Fetch when going into admin view
   useEffect(() => {
     if (view === 'admin') {
       fetchOrders();
       fetchAnalytics();
-      fetchProducts();
-      fetchPromotions();
     }
-  }, [view, adminTab]);
+  }, [view]);
 
   const addToast = (text, type = 'info') => {
     const id = Date.now();
@@ -390,7 +392,9 @@ export default function App() {
               </div>
             </header>
             
-            {renderAdminTab()}
+            <Suspense fallback={<div style={{ padding: '2rem', color: 'var(--text-secondary)' }}>Loading admin panel…</div>}>
+              {renderAdminTab()}
+            </Suspense>
           </main>
         </div>
       )}

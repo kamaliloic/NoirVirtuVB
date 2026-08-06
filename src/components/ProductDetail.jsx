@@ -30,6 +30,7 @@ export default function ProductDetail({ product, onClose, onAddToCart }) {
             src={product.images[0]} 
             alt={product.name} 
             className="detail-img"
+            loading="lazy"
             onError={(e) => {
               e.target.src = 'https://images.unsplash.com/photo-1556821840-3a63f95609a7?auto=format&fit=crop&w=600&q=80';
             }}

@@ -29,7 +29,6 @@ export default function CustomerShop({ onProductSelect, cartItemsCount, onCartOp
 
   // Extract all categories
   const categories = ['ALL', 'TOPS', 'BOTTOMS', 'ACCESSORIES'];
-  const collections = ['ALL', 'THE EIGHTH ARCHIVE', 'NEW ARRIVALS', 'BEST SELLERS'];
 
   const filteredProducts = products.filter(product => {
     const categoryMatch = selectedCategory === 'ALL' || 
@@ -168,8 +167,9 @@ export default function CustomerShop({ onProductSelect, cartItemsCount, onCartOp
                       src={product.images[0]} 
                       alt={product.name} 
                       className="product-card-img"
+                      loading="lazy"
                       onError={(e) => {
-                        e.target.src = 'https://images.unsplash.com/photo-1556821840-3a63f95609a7?auto=format&fit=crop&w=400&q=80'; // Fallback street image
+                        e.target.src = 'https://images.unsplash.com/photo-1556821840-3a63f95609a7?auto=format&fit=crop&w=400&q=80';
                       }}
                     />
                     

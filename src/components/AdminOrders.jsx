@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 
-export default function AdminOrders({ orders, onOrderStatusUpdated, onPrintReceipt, storeConfig }) {
+export default function AdminOrders({ orders, onOrderStatusUpdated, onPrintReceipt }) {
   const [statusFilter, setStatusFilter] = useState('ALL');
   const [selectedOrder, setSelectedOrder] = useState(null);
 
