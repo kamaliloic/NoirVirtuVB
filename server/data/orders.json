@@ -721,5 +721,62 @@
     "paymentMethod": "Visa Ending 1231",
     "status": "Completed",
     "date": "2026-08-05T18:23:35.154Z"
+  },
+  {
+    "id": "NV-1024",
+    "customer": {
+      "name": "Loic Kamali",
+      "email": "kamaliloic23@gmail.com",
+      "address": "Karuruma",
+      "city": "Kigali",
+      "state": "Rw",
+      "postalCode": "000000"
+    },
+    "items": [
+      {
+        "productId": "TEST-001",
+        "name": "Verifiable Street Tee",
+        "size": "M",
+        "quantity": 3,
+        "price": 25000
+      }
+    ],
+    "subtotal": 75000,
+    "discount": 0,
+    "tax": 6187.5,
+    "shipping": 2000,
+    "total": 83187.5,
+    "promoCode": "",
+    "paymentMethod": "MTN Mobile Money (0791276870)",
+    "status": "Pending",
+    "date": "2026-08-13T23:28:19.046Z"
+  },
+  {
+    "id": "NV-1025",
+    "customer": {
+      "name": "Noir Off Tee",
+      "email": "kamaliloic23@gmail.com",
+      "phone": "+250791276870",
+      "address": "Karuruma",
+      "city": "Kigali"
+    },
+    "items": [
+      {
+        "productId": "NOIR-MULTI-77",
+        "name": "Vandal Cargo Pants",
+        "size": "M",
+        "quantity": 1,
+        "price": 12000
+      }
+    ],
+    "subtotal": 12000,
+    "discount": 0,
+    "tax": 990,
+    "shipping": 2000,
+    "total": 14990,
+    "promoCode": "",
+    "paymentMethod": "MTN Mobile Money (0791276870)",
+    "status": "Pending",
+    "date": "2026-08-13T23:43:57.947Z"
   }
 ]

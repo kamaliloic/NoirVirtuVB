@@ -20,7 +20,11 @@ export default function SignIn() {
 
       if (signInError) {
         setError(signInError.message);
-      } else if (data) {
+      } else if (!data?.session) {
+        // If data.session is null, don't redirect to the dashboard
+        setError("Check your email and confirm your account before logging in.");
+      } else {
+        // Only redirect when a real session exists after login
         window.location.href = '/';
       }
     } catch (err) {

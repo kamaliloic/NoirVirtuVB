@@ -3,6 +3,7 @@ import cors from 'cors';
 import path from 'path';
 import fs from 'fs';
 import { db } from './db.js';
+import supabase from './supabase.js';
 
 const app = express();
 const PORT = process.env.PORT || 5001;
@@ -174,14 +175,14 @@ app.post('/api/orders', async (req, res) => {
       shipping,
       total,
       promoCode: promoCode || '',
-      paymentMethod: paymentMethod || 'Mock Card',
+      paymentMethod: paymentMethod || 'MTN Mobile Money (MoMo)',
       status: 'Pending',
       date: new Date().toISOString()
     };
 
     orders.push(newOrder);
     await db.saveOrders(orders);
-    await db.saveProducts(products); // Save updated stock levels
+    await db.saveProducts(products); // Save updated stock levels in Supabase
     
     res.status(201).json(newOrder);
   } catch (err) {

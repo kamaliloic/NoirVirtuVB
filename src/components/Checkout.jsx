@@ -120,17 +120,14 @@ export default function Checkout({ cartItems, storeConfig, onOrderSuccess, onCan
   const [customer, setCustomer] = useState({
     name: '',
     email: '',
+    phone: '',
     address: '',
-    city: '',
-    state: '',
-    postalCode: ''
+    city: ''
   });
 
-  const [card, setCard] = useState({
-    number: '',
-    expiry: '',
-    cvv: ''
-  });
+  const [momoProvider, setMomoProvider] = useState('MTN Mobile Money');
+  const [momoPhone, setMomoPhone] = useState('');
+  const [momoName, setMomoName] = useState('');
 
   const [promoCodeInput, setPromoCodeInput] = useState('');
   const [activePromo, setActivePromo] = useState(null);
@@ -161,18 +158,6 @@ export default function Checkout({ cartItems, storeConfig, onOrderSuccess, onCan
     setCustomer({
       ...customer,
       [e.target.name]: e.target.value
-    });
-  };
-
-  const handleCardChange = (e) => {
-    let val = e.target.value;
-    if (e.target.name === 'number') {
-      // Add spaces for card formatting
-      val = val.replace(/\s?/g, '').replace(/(\d{4})/g, '$1 ').trim();
-    }
-    setCard({
-      ...card,
-      [e.target.name]: val
     });
   };
 
@@ -208,13 +193,13 @@ export default function Checkout({ cartItems, storeConfig, onOrderSuccess, onCan
     e.preventDefault();
     if (cartItems.length === 0) return;
 
-    if (!customer.name || !customer.email || !customer.address || !customer.city || !customer.state || !customer.postalCode) {
-      alert('Please fill out all shipping fields.');
+    if (!customer.name || !customer.email || !customer.phone || !customer.address || !customer.city) {
+      alert('Please fill out all contact and delivery fields.');
       return;
     }
 
-    if (!card.number || !card.expiry || !card.cvv) {
-      alert('Please fill out card details.');
+    if (!momoPhone || !momoPhone.trim()) {
+      alert('Please enter your Mobile Money (MoMo) registered phone number.');
       return;
     }
 
@@ -222,8 +207,8 @@ export default function Checkout({ cartItems, storeConfig, onOrderSuccess, onCan
       setProcessing(true);
       setError(null);
 
-      // Simulate payment processing delays
-      await new Promise(resolve => setTimeout(resolve, 2000));
+      // Simulate MoMo USSD prompt verification delay
+      await new Promise(resolve => setTimeout(resolve, 2500));
 
       const orderPayload = {
         customer,
@@ -233,7 +218,7 @@ export default function Checkout({ cartItems, storeConfig, onOrderSuccess, onCan
           quantity: item.quantity
         })),
         promoCode: activePromo ? activePromo.code : '',
-        paymentMethod: `Visa Ending ${card.number.slice(-4)}`
+        paymentMethod: `${momoProvider} (${momoPhone.trim()})`
       };
 
       const res = await fetch('/api/orders', {
@@ -244,14 +229,14 @@ export default function Checkout({ cartItems, storeConfig, onOrderSuccess, onCan
 
       if (!res.ok) {
         const errorData = await res.json();
-        throw new Error(errorData.error || 'Checkout transaction failed');
+        throw new Error(errorData.error || 'Mobile Money transaction failed');
       }
 
       const completedOrder = await res.json();
       onOrderSuccess(completedOrder);
     } catch (err) {
       console.error(err);
-      setError(err.message || 'Checkout failed. Please inspect logs.');
+      setError(err.message || 'Mobile Money payment failed. Please check your phone prompt.');
     } finally {
       setProcessing(false);
     }
@@ -269,7 +254,7 @@ export default function Checkout({ cartItems, storeConfig, onOrderSuccess, onCan
           ← Back to Shop
         </button>
 
-        <h2 className="checkout-section-title">Shipping Address</h2>
+        <h2 className="checkout-section-title">Delivery & Contact Information</h2>
         <form onSubmit={handleSubmit} className="checkout-form">
           <div className="form-group">
             <label htmlFor="name">Full Name</label>
@@ -285,129 +270,139 @@ export default function Checkout({ cartItems, storeConfig, onOrderSuccess, onCan
             />
           </div>
 
-          <div className="form-group">
-            <label htmlFor="email">Email Address</label>
-            <input 
-              type="email" 
-              name="email" 
-              id="email" 
-              className="form-input" 
-              required 
-              placeholder="e.g. marcus@vance.co"
-              value={customer.email}
-              onChange={handleInputChange} 
-            />
+          <div className="form-row">
+            <div className="form-group">
+              <label htmlFor="email">Email Address</label>
+              <input 
+                type="email" 
+                name="email" 
+                id="email" 
+                className="form-input" 
+                required 
+                placeholder="e.g. marcus@vance.co"
+                value={customer.email}
+                onChange={handleInputChange} 
+              />
+            </div>
+
+            <div className="form-group">
+              <label htmlFor="phone">Contact Phone Number</label>
+              <input 
+                type="tel" 
+                name="phone" 
+                id="phone" 
+                className="form-input" 
+                required 
+                placeholder="e.g. 0788 123 456 or +250 788 123 456"
+                value={customer.phone}
+                onChange={handleInputChange} 
+              />
+            </div>
           </div>
 
           <div className="form-group">
-            <label htmlFor="address">Delivery Address</label>
+            <label htmlFor="address">Delivery Street Address</label>
             <input 
               type="text" 
               name="address" 
               id="address" 
               className="form-input" 
               required 
-              placeholder="Street Address, Apt or Suite Number"
+              placeholder="Street Address, Building, Apt or Suite Number"
               value={customer.address}
               onChange={handleInputChange} 
             />
           </div>
 
-          <div className="form-row">
-            <div className="form-group">
-              <label htmlFor="city">City</label>
-              <input 
-                type="text" 
-                name="city" 
-                id="city" 
-                className="form-input" 
-                required 
-                placeholder="e.g. Los Angeles"
-                value={customer.city}
-                onChange={handleInputChange} 
-              />
-            </div>
-            
-            <div className="form-row">
-              <div className="form-group">
-                <label htmlFor="state">State</label>
-                <input 
-                  type="text" 
-                  name="state" 
-                  id="state" 
-                  className="form-input" 
-                  required 
-                  placeholder="CA"
-                  maxLength="2"
-                  value={customer.state}
-                  onChange={handleInputChange} 
-                />
-              </div>
-              <div className="form-group">
-                <label htmlFor="postalCode">Zip Code</label>
-                <input 
-                  type="text" 
-                  name="postalCode" 
-                  id="postalCode" 
-                  className="form-input" 
-                  required 
-                  placeholder="90014"
-                  value={customer.postalCode}
-                  onChange={handleInputChange} 
-                />
-              </div>
-            </div>
+          <div className="form-group">
+            <label htmlFor="city">City / District</label>
+            <input 
+              type="text" 
+              name="city" 
+              id="city" 
+              className="form-input" 
+              required 
+              placeholder="e.g. Kigali / Kiyovu"
+              value={customer.city}
+              onChange={handleInputChange} 
+            />
           </div>
 
-          {/* PAYMENT BOX */}
-          <h2 className="checkout-section-title" style={{ marginTop: '2.5rem' }}>Secure Payment</h2>
-          <div className="payment-box">
-            <span className="payment-label">MOCK PAYMENT CARD PROCESSOR</span>
-            
+          {/* MOMO PAYMENT GATEWAY */}
+          <h2 className="checkout-section-title" style={{ marginTop: '2.5rem' }}>
+            Mobile Money Payment (MoMo Pay)
+          </h2>
+          <div className="payment-box" style={{ backgroundColor: 'var(--bg-secondary)', border: '1px solid var(--border-color)' }}>
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '1.25rem' }}>
+              <span className="payment-label" style={{ color: '#f59e0b', fontWeight: '800' }}>
+                📲 DIRECT MOBILE MONEY (MOMO PAY)
+              </span>
+              <span style={{ fontSize: '0.65rem', textTransform: 'uppercase', letterSpacing: '0.1em', backgroundColor: 'rgba(245, 158, 11, 0.15)', color: '#f59e0b', padding: '0.2rem 0.5rem', fontWeight: '700' }}>
+                Exclusive Gateway
+              </span>
+            </div>
+
             <div className="form-group" style={{ marginBottom: '1.25rem' }}>
-              <label htmlFor="card-number">Card Number</label>
+              <label style={{ fontSize: '0.7rem', fontWeight: '600' }}>Select MoMo Network Provider</label>
+              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0.75rem', marginTop: '0.35rem' }}>
+                <button
+                  type="button"
+                  className={`btn ${momoProvider === 'MTN Mobile Money' ? '' : 'btn-secondary'}`}
+                  onClick={() => setMomoProvider('MTN Mobile Money')}
+                  style={{ fontSize: '0.75rem', padding: '0.6rem 0.5rem', textTransform: 'uppercase', fontWeight: '700' }}
+                >
+                  🟡 MTN MoMo
+                </button>
+                <button
+                  type="button"
+                  className={`btn ${momoProvider === 'Airtel Money' ? '' : 'btn-secondary'}`}
+                  onClick={() => setMomoProvider('Airtel Money')}
+                  style={{ fontSize: '0.75rem', padding: '0.6rem 0.5rem', textTransform: 'uppercase', fontWeight: '700' }}
+                >
+                  🔴 Airtel Money
+                </button>
+              </div>
+            </div>
+
+            <div className="form-group" style={{ marginBottom: '1.25rem' }}>
+              <label htmlFor="momo-phone">MoMo Registered Phone Number</label>
               <input 
-                type="text" 
-                name="number" 
-                id="card-number" 
+                type="tel" 
+                name="momoPhone" 
+                id="momo-phone" 
                 className="form-input" 
                 required 
-                maxLength="19"
-                placeholder="4000 1234 5678 9010"
-                value={card.number}
-                onChange={handleCardChange}
+                placeholder="e.g. 0788 123 456 or +250 788 123 456"
+                value={momoPhone}
+                onChange={(e) => setMomoPhone(e.target.value)}
+                style={{ backgroundColor: 'var(--bg-primary)' }}
               />
             </div>
 
-            <div className="form-row">
-              <div className="form-group">
-                <label htmlFor="card-expiry">Expiry Date</label>
-                <input 
-                  type="text" 
-                  name="expiry" 
-                  id="card-expiry" 
-                  className="form-input" 
-                  required 
-                  maxLength="5"
-                  placeholder="MM/YY"
-                  value={card.expiry}
-                  onChange={handleCardChange}
-                />
-              </div>
-              <div className="form-group">
-                <label htmlFor="card-cvv">CVV</label>
-                <input 
-                  type="password" 
-                  name="cvv" 
-                  id="card-cvv" 
-                  className="form-input" 
-                  required 
-                  maxLength="3"
-                  placeholder="***"
-                  value={card.cvv}
-                  onChange={handleCardChange}
-                />
-              </div>
+            <div className="form-group">
+              <label htmlFor="momo-name">Account Holder Name (Optional)</label>
+              <input 
+                type="text" 
+                name="momoName" 
+                id="momo-name" 
+                className="form-input" 
+                placeholder="Name on MoMo Account"
+                value={momoName}
+                onChange={(e) => setMomoName(e.target.value)}
+                style={{ backgroundColor: 'var(--bg-primary)' }}
+              />
+            </div>
+
+            <div style={{
+              backgroundColor: 'rgba(255, 255, 255, 0.03)',
+              border: '1px dashed var(--border-color)',
+              padding: '0.85rem 1rem',
+              marginTop: '1.25rem',
+              fontSize: '0.75rem',
+              color: 'var(--text-secondary)',
+              lineHeight: '1.4'
+            }}>
+              💡 <strong>How it works:</strong> Upon clicking <em>Pay via MoMo</em>, a USSD push authorization notification will be sent directly to <strong>{momoPhone || 'your phone number'}</strong>. Enter your MoMo PIN to authorize payment of <strong>{formatPrice(total, storeConfig.currency)}</strong>.
             </div>
           </div>
 
@@ -420,10 +415,17 @@ export default function Checkout({ cartItems, storeConfig, onOrderSuccess, onCan
           <button 
             type="submit" 
             className="btn" 
-            style={{ width: '100%', padding: '1.25rem', marginTop: '1rem' }} 
+            style={{ width: '100%', padding: '1.25rem', marginTop: '1rem', backgroundColor: '#f59e0b', color: '#000', fontWeight: '800' }} 
             disabled={processing || cartItems.length === 0}
           >
-            {processing ? 'Processing Secure Checkout...' : `Authorize & Pay ${formatPrice(total, storeConfig.currency)}`}
+            {processing ? (
+              <span style={{ display: 'inline-flex', alignItems: 'center', gap: '0.5rem' }}>
+                <span className="spinner" style={{ width: '16px', height: '16px', border: '2px solid rgba(0,0,0,0.2)', borderTopColor: '#000', borderRadius: '50%', animation: 'spin 0.8s linear infinite' }}></span>
+                Sending MoMo Pay Push Prompt...
+              </span>
+            ) : (
+              `📲 Pay ${formatPrice(total, storeConfig.currency)} via MoMo`
+            )}
           </button>
         </form>
       </div>

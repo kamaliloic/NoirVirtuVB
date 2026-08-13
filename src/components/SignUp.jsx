@@ -20,7 +20,11 @@ export default function SignUp() {
 
       if (signUpError) {
         setError(signUpError.message);
-      } else if (data) {
+      } else if (!data?.session) {
+        // If data.session is null, don't redirect to the dashboard
+        setError("Check your email and confirm your account before logging in.");
+      } else {
+        // Only redirect when a real session exists after signup
         window.location.href = '/';
       }
     } catch (err) {

@@ -161,7 +161,12 @@ export default function AdminOrders({ orders, onOrderStatusUpdated, onPrintRecei
               <div>
                 <h4 style={{ textTransform: 'uppercase', fontSize: '0.75rem', color: 'var(--text-secondary)', marginBottom: '0.5rem' }}>Shipping Address</h4>
                 <p>{selectedOrder.customer.address}</p>
-                <p>{selectedOrder.customer.city}, {selectedOrder.customer.state} {selectedOrder.customer.postalCode}</p>
+                <p>{selectedOrder.customer.city}</p>
+                {selectedOrder.customer.phone && (
+                  <p style={{ fontFamily: 'var(--font-mono)', fontSize: '0.8rem', color: 'var(--text-secondary)' }}>
+                    Tel: {selectedOrder.customer.phone}
+                  </p>
+                )}
               </div>
             </div>
 

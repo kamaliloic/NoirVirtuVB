@@ -110,7 +110,7 @@ export default function Receipt({ order, storeConfig, onContinue }) {
           PAYMENT METHOD: {order.paymentMethod}
         </div>
         <div style={{ fontSize: '0.75rem' }}>
-          SHIPPING TO: {order.customer.address}, {order.customer.city}, {order.customer.state} {order.customer.postalCode}
+          DELIVERY TO: {order.customer.address}, {order.customer.city} {order.customer.phone ? `// TEL: ${order.customer.phone}` : ''}
         </div>
 
         {/* Barcode simulation */}
