@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { formatPrice } from '../utils.js';
 
 // Sliding Cart Drawer Component
@@ -33,7 +33,7 @@ export function CartDrawer({ isOpen, onClose, cartItems, onUpdateQty, onRemoveIt
               </button>
             </div>
           ) : (
-            cartItems.map((item) => (
+            cartItems.map((item, idx) => (
               <div key={`${item.productId}-${item.size}`} className="cart-item">
                 <img 
                   src={item.images?.[0] || '/images/placeholder.jpg'} 
@@ -195,7 +195,7 @@ export default function Checkout({ cartItems, storeConfig, onOrderSuccess, onCan
         setActivePromo(found);
         setPromoCodeInput('');
       }
-    } catch {
+    } catch (err) {
       setPromoError('Failed to validate promotion');
     }
   };

@@ -1444,3 +1444,156 @@ a {
 @keyframes spin {
   to { transform: rotate(360deg); }
 }
+
+/* --- RESPONSIVENESS OVERRIDES --- */
+
+/* Sidebar footer override class */
+.admin-sidebar-footer {
+  margin-top: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  width: 100%;
+}
+
+@media (max-width: 768px) {
+  /* Customer Shop Navbar mobile layout */
+  .navbar {
+    padding: 1rem 1.25rem !important;
+    flex-wrap: wrap;
+    gap: 1rem;
+  }
+  .nav-links {
+    order: 3;
+    width: 100%;
+    justify-content: space-between;
+    gap: 1rem;
+    font-size: 0.8rem;
+    overflow-x: auto;
+    padding-bottom: 0.25rem;
+  }
+  
+  /* Customer Shop Hero section mobile optimization */
+  .hero-section {
+    padding: 4rem 1.25rem !important;
+  }
+  .hero-title {
+    font-size: 2.5rem !important;
+  }
+
+  /* Admin Portal mobile stacking layout */
+  .admin-layout {
+    flex-direction: column;
+  }
+  .admin-sidebar {
+    width: 100% !important;
+    position: static !important;
+    height: auto !important;
+    padding: 1.5rem !important;
+    border-right: none !important;
+    border-bottom: 1px solid var(--border-color);
+  }
+  .admin-sidebar-header {
+    margin-bottom: 1.5rem !important;
+  }
+  .admin-nav {
+    flex-direction: row !important;
+    overflow-x: auto;
+    padding-bottom: 0.5rem;
+    gap: 0.5rem;
+    -webkit-overflow-scrolling: touch;
+  }
+  .admin-nav-item {
+    white-space: nowrap;
+    padding: 0.6rem 1rem !important;
+    width: auto !important;
+  }
+  .admin-nav-item.active {
+    border-left: none !important;
+    border-bottom: 3px solid var(--text-primary);
+    border-bottom-left-radius: 0;
+    border-bottom-right-radius: 0;
+  }
+  .admin-sidebar-footer {
+    margin-top: 1.5rem !important;
+    flex-direction: row !important;
+  }
+  .admin-sidebar-footer button {
+    margin-top: 0 !important;
+    flex: 1;
+  }
+
+  /* Admin main workspace mobile layout */
+  .admin-main {
+    margin-left: 0 !important;
+    padding: 1.5rem !important;
+  }
+  .admin-header {
+    flex-direction: column !important;
+    align-items: flex-start !important;
+    gap: 0.5rem;
+    margin-bottom: 1.5rem !important;
+  }
+  .admin-title {
+    font-size: 1.5rem !important;
+  }
+
+  /* Filter chips horizontal scrolling */
+  .category-filters {
+    gap: 0.5rem !important;
+    overflow-x: auto;
+    padding-bottom: 0.25rem;
+    width: 100%;
+    -webkit-overflow-scrolling: touch;
+  }
+  .filter-chip {
+    white-space: nowrap;
+    padding: 0.4rem 0.8rem !important;
+    font-size: 0.75rem !important;
+  }
+
+  /* Modal layout spacing updates */
+  .detail-info-section {
+    padding: 1.5rem 1.25rem !important;
+  }
+
+  /* Products grid list layout on small screens (tablet and mobile) */
+  .products-grid {
+    grid-template-columns: 1fr !important;
+    gap: 2.5rem !important;
+  }
+}
+
+@media (max-width: 600px) {
+  /* Admin actions bar (Search and add button) stacking */
+  .admin-actions-bar {
+    flex-direction: column;
+    align-items: stretch !important;
+    gap: 1rem;
+  }
+  .admin-actions-bar input {
+    max-width: 100% !important;
+  }
+  
+  /* Modal responsive spacing */
+  .admin-modal {
+    padding: 1.5rem !important;
+  }
+  .form-row {
+    grid-template-columns: 1fr !important;
+    gap: 1rem !important;
+  }
+  .modal-actions {
+    flex-direction: column-reverse;
+    align-items: stretch;
+  }
+  .modal-actions button {
+    width: 100%;
+  }
+
+  /* Checkout page spacing */
+  .checkout-container {
+    padding: 2rem 1.25rem !important;
+  }
+}
+

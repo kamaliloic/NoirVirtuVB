@@ -51,7 +51,7 @@ export default function AdminOrders({ orders, onOrderStatusUpdated, onPrintRecei
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: '2rem' }}>
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+      <div className="admin-actions-bar">
         {/* Status Filter tabs */}
         <div className="category-filters">
           {['ALL', 'PENDING', 'PROCESSING', 'SHIPPED', 'COMPLETED', 'CANCELLED'].map(status => (

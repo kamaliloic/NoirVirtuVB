@@ -212,7 +212,7 @@ export default function AdminProducts({ products, onProductCreated, onProductUpd
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: '2rem' }}>
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+      <div className="admin-actions-bar">
         {/* Search bar */}
         <input 
           type="text" 

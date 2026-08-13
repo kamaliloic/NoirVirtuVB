@@ -516,15 +516,7 @@ export default function App() {
                 </li>
               </ul>
 
-              <div
-                style={{
-                  marginTop: "auto",
-                  display: "flex",
-                  flexDirection: "column",
-                  gap: "0.75rem",
-                  width: "100%",
-                }}
-              >
+              <div className="admin-sidebar-footer">
                 <button
                   className="btn btn-secondary"
                   style={{
