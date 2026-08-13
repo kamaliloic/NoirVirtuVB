@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 
-export default function AdminPromotions({ promotions, onPromoCreated, onPromoUpdated, onPromoDeleted }) {
+export default function AdminPromotions({ promotions, adminToken, onPromoCreated, onPromoUpdated, onPromoDeleted }) {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [formData, setFormData] = useState({
     code: '',
@@ -22,7 +22,10 @@ export default function AdminPromotions({ promotions, onPromoCreated, onPromoUpd
     try {
       const res = await fetch(`/api/promotions/${promo.code}`, {
         method: 'PUT',
-        headers: { 'Content-Type': 'application/json' },
+        headers: {
+          'Content-Type': 'application/json',
+          ...(adminToken ? { 'x-admin-token': adminToken } : {})
+        },
         body: JSON.stringify({ active: !promo.active })
       });
       if (!res.ok) throw new Error('Failed to toggle promotion status');
@@ -38,7 +41,8 @@ export default function AdminPromotions({ promotions, onPromoCreated, onPromoUpd
     
     try {
       const res = await fetch(`/api/promotions/${code}`, {
-        method: 'DELETE'
+        method: 'DELETE',
+        headers: adminToken ? { 'x-admin-token': adminToken } : {}
       });
       if (!res.ok) throw new Error('Failed to delete promotion');
       onPromoDeleted(code);
@@ -62,7 +66,10 @@ export default function AdminPromotions({ promotions, onPromoCreated, onPromoUpd
     try {
       const res = await fetch('/api/promotions', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: {
+          'Content-Type': 'application/json',
+          ...(adminToken ? { 'x-admin-token': adminToken } : {})
+        },
         body: JSON.stringify(payload)
       });
 

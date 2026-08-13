@@ -1,11 +1,14 @@
 import express from 'express';
 import cors from 'cors';
+import crypto from 'crypto';
 import { db } from './db.js';
 
 const app = express();
 const PORT = process.env.PORT || 5001;
 const CLIENT_ORIGIN = process.env.CLIENT_ORIGIN || 'http://localhost:5173';
 const ALLOWED_ORIGINS = new Set([CLIENT_ORIGIN]);
+const ADMIN_SECRET = process.env.ADMIN_SECRET || 'NOIR-VIRTU-ADMIN-KEY';
+const adminTokens = new Set();
 
 app.disable('x-powered-by');
 app.use(cors({
@@ -15,8 +18,8 @@ app.use(cors({
     }
     return callback(new Error('CORS origin not allowed'));
   },
-  methods: ['GET', 'POST', 'PUT', 'DELETE'],
-  allowedHeaders: ['Content-Type']
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization', 'X-Admin-Token']
 }));
 app.use(express.json({ limit: '10kb' }));
 app.use((req, res, next) => {
@@ -36,9 +39,26 @@ const toNonNegativeNumber = (value) => {
   return Number.isFinite(result) && result >= 0 ? result : null;
 };
 
+let orderProcessingQueue = Promise.resolve();
+
+const runSerializedOrderOperation = (task) => {
+  const previous = orderProcessingQueue;
+  const next = previous.then(task, task);
+  orderProcessingQueue = next.catch(() => {});
+  return next;
+};
+
 const validateProductPayload = (payload, isUpdate = false) => {
   if (!isUpdate && !isNonEmptyString(payload.name)) {
     return 'Product name is required';
+  }
+
+  if (payload.name !== undefined && !isNonEmptyString(payload.name)) {
+    return 'Product name must be a non-empty string';
+  }
+
+  if (payload.description !== undefined && typeof payload.description !== 'string') {
+    return 'Product description must be a string';
   }
 
   if (payload.price !== undefined) {
@@ -117,6 +137,50 @@ const validateStorePayload = (payload) => {
   return null;
 };
 
+const getAdminToken = (req) => {
+  if (typeof req.headers['x-admin-token'] === 'string' && req.headers['x-admin-token'].trim()) {
+    return req.headers['x-admin-token'].trim();
+  }
+
+  if (typeof req.headers.authorization === 'string' && req.headers.authorization.startsWith('Bearer ')) {
+    return req.headers.authorization.slice(7).trim();
+  }
+
+  if (req.body && typeof req.body.adminToken === 'string' && req.body.adminToken.trim()) {
+    return req.body.adminToken.trim();
+  }
+
+  return '';
+};
+
+const requireAdminAuth = (req, res, next) => {
+  const token = getAdminToken(req);
+  if (token && adminTokens.has(token)) {
+    return next();
+  }
+
+  return res.status(401).json({ error: 'Admin access denied' });
+};
+
+app.post('/api/admin/login', (req, res) => {
+  const { secret } = req.body;
+  if (!isNonEmptyString(secret)) {
+    return res.status(400).json({ error: 'Admin secret is required' });
+  }
+
+  if (secret !== ADMIN_SECRET) {
+    return res.status(401).json({ error: 'Invalid admin secret' });
+  }
+
+  const token = crypto.randomUUID();
+  adminTokens.add(token);
+  return res.json({ token, expiresInSeconds: 3600 });
+});
+
+app.get('/api/admin/verify', requireAdminAuth, (req, res) => {
+  return res.json({ authenticated: true });
+});
+
 // --- Products Endpoints ---
 app.get('/api/products', async (req, res) => {
   try {
@@ -128,7 +192,7 @@ app.get('/api/products', async (req, res) => {
   }
 });
 
-app.post('/api/products', async (req, res) => {
+app.post('/api/products', requireAdminAuth, async (req, res) => {
   try {
     const payload = {
       ...req.body,
@@ -169,7 +233,7 @@ app.post('/api/products', async (req, res) => {
   }
 });
 
-app.put('/api/products/:id', async (req, res) => {
+app.put('/api/products/:id', requireAdminAuth, async (req, res) => {
   try {
     const products = await db.getProducts();
     const index = products.findIndex((p) => p.id === req.params.id);
@@ -211,7 +275,7 @@ app.put('/api/products/:id', async (req, res) => {
   }
 });
 
-app.delete('/api/products/:id', async (req, res) => {
+app.delete('/api/products/:id', requireAdminAuth, async (req, res) => {
   try {
     let products = await db.getProducts();
     const index = products.findIndex((p) => p.id === req.params.id);
@@ -230,7 +294,7 @@ app.delete('/api/products/:id', async (req, res) => {
 
 
 // --- Orders Endpoints ---
-app.get('/api/orders', async (req, res) => {
+app.get('/api/orders', requireAdminAuth, async (req, res) => {
   try {
     const orders = await db.getOrders();
     res.json(orders);
@@ -241,98 +305,100 @@ app.get('/api/orders', async (req, res) => {
 });
 
 app.post('/api/orders', async (req, res) => {
-  try {
-    const validationError = validateOrderPayload(req.body);
-    if (validationError) {
-      return res.status(400).json({ error: validationError });
-    }
-
-    const { customer, items, promoCode, paymentMethod } = req.body;
-    const products = await db.getProducts();
-    const promotions = await db.getPromotions();
-    const config = await db.getStoreConfig();
-
-    let subtotal = 0;
-    const validatedItems = [];
-
-    for (const item of items) {
-      const product = products.find((p) => p.id === item.productId);
-      if (!product) {
-        return res.status(400).json({ error: `Product ${item.productId} not found` });
+  return runSerializedOrderOperation(async () => {
+    try {
+      const validationError = validateOrderPayload(req.body);
+      if (validationError) {
+        return res.status(400).json({ error: validationError });
       }
 
-      const quantity = toPositiveInteger(item.quantity);
-      if (quantity === null || quantity === 0) {
-        return res.status(400).json({ error: `Invalid quantity for product ${item.productId}` });
+      const { customer, items, promoCode, paymentMethod } = req.body;
+      const products = await db.getProducts();
+      const promotions = await db.getPromotions();
+      const config = await db.getStoreConfig();
+
+      let subtotal = 0;
+      const validatedItems = [];
+
+      for (const item of items) {
+        const product = products.find((p) => p.id === item.productId);
+        if (!product) {
+          return res.status(400).json({ error: `Product ${item.productId} not found` });
+        }
+
+        const quantity = toPositiveInteger(item.quantity);
+        if (quantity === null || quantity === 0) {
+          return res.status(400).json({ error: `Invalid quantity for product ${item.productId}` });
+        }
+
+        if (product.stock < quantity) {
+          return res.status(400).json({ error: `Insufficient stock for product ${product.name}` });
+        }
+
+        product.stock -= quantity;
+        subtotal += product.price * quantity;
+        validatedItems.push({
+          productId: product.id,
+          name: product.name,
+          size: isNonEmptyString(item.size) ? item.size.trim() : 'M',
+          quantity,
+          price: product.price
+        });
       }
 
-      if (product.stock < quantity) {
-        return res.status(400).json({ error: `Insufficient stock for product ${product.name}` });
-      }
-
-      product.stock -= quantity;
-      subtotal += product.price * quantity;
-      validatedItems.push({
-        productId: product.id,
-        name: product.name,
-        size: isNonEmptyString(item.size) ? item.size.trim() : 'M',
-        quantity,
-        price: product.price
-      });
-    }
-
-    let discount = 0;
-    if (isNonEmptyString(promoCode)) {
-      const promo = promotions.find((p) => p.code.toUpperCase() === promoCode.toUpperCase() && p.active);
-      if (promo) {
-        if (promo.type === 'percent') {
-          discount = parseFloat((subtotal * (promo.value / 100)).toFixed(2));
-        } else if (promo.type === 'fixed') {
-          discount = Math.min(promo.value, subtotal);
+      let discount = 0;
+      if (isNonEmptyString(promoCode)) {
+        const promo = promotions.find((p) => p.code.toUpperCase() === promoCode.toUpperCase() && p.active);
+        if (promo) {
+          if (promo.type === 'percent') {
+            discount = parseFloat((subtotal * (promo.value / 100)).toFixed(2));
+          } else if (promo.type === 'fixed') {
+            discount = Math.min(promo.value, subtotal);
+          }
         }
       }
+
+      const shipping = subtotal >= (config.freeShippingThreshold || 150) ? 0 : (config.shippingFee || 10.0);
+      const taxableAmount = Math.max(0, subtotal - discount);
+      const tax = parseFloat((taxableAmount * ((config.taxRate || 8.25) / 100)).toFixed(2));
+      const total = parseFloat((taxableAmount + shipping + tax).toFixed(2));
+
+      const orders = await db.getOrders();
+      const newOrder = {
+        id: `NV-${1000 + orders.length + 1}`,
+        customer: {
+          name: customer.name.trim(),
+          email: customer.email.trim(),
+          address: customer.address.trim(),
+          city: customer.city.trim(),
+          state: customer.state.trim(),
+          postalCode: customer.postalCode.trim()
+        },
+        items: validatedItems,
+        subtotal,
+        discount,
+        tax,
+        shipping,
+        total,
+        promoCode: isNonEmptyString(promoCode) ? promoCode.toUpperCase().trim() : '',
+        paymentMethod: isNonEmptyString(paymentMethod) ? paymentMethod.trim() : 'Mock Card',
+        status: 'Pending',
+        date: new Date().toISOString()
+      };
+
+      orders.push(newOrder);
+      await db.saveOrders(orders);
+      await db.saveProducts(products);
+
+      return res.status(201).json(newOrder);
+    } catch (err) {
+      console.error('Failed to create order:', err);
+      return res.status(500).json({ error: 'Failed to process order' });
     }
-
-    const shipping = subtotal >= (config.freeShippingThreshold || 150) ? 0 : (config.shippingFee || 10.0);
-    const taxableAmount = Math.max(0, subtotal - discount);
-    const tax = parseFloat((taxableAmount * ((config.taxRate || 8.25) / 100)).toFixed(2));
-    const total = parseFloat((taxableAmount + shipping + tax).toFixed(2));
-
-    const orders = await db.getOrders();
-    const newOrder = {
-      id: `NV-${1000 + orders.length + 1}`,
-      customer: {
-        name: customer.name.trim(),
-        email: customer.email.trim(),
-        address: customer.address.trim(),
-        city: customer.city.trim(),
-        state: customer.state.trim(),
-        postalCode: customer.postalCode.trim()
-      },
-      items: validatedItems,
-      subtotal,
-      discount,
-      tax,
-      shipping,
-      total,
-      promoCode: isNonEmptyString(promoCode) ? promoCode.toUpperCase().trim() : '',
-      paymentMethod: isNonEmptyString(paymentMethod) ? paymentMethod.trim() : 'Mock Card',
-      status: 'Pending',
-      date: new Date().toISOString()
-    };
-
-    orders.push(newOrder);
-    await db.saveOrders(orders);
-    await db.saveProducts(products);
-
-    res.status(201).json(newOrder);
-  } catch (err) {
-    console.error('Failed to create order:', err);
-    res.status(500).json({ error: 'Failed to process order' });
-  }
+  });
 });
 
-app.put('/api/orders/:id', async (req, res) => {
+app.put('/api/orders/:id', requireAdminAuth, async (req, res) => {
   try {
     const orders = await db.getOrders();
     const index = orders.findIndex(o => o.id === req.params.id);
@@ -361,7 +427,7 @@ app.get('/api/promotions', async (req, res) => {
   }
 });
 
-app.post('/api/promotions', async (req, res) => {
+app.post('/api/promotions', requireAdminAuth, async (req, res) => {
   try {
     const payload = {
       ...req.body,
@@ -395,7 +461,7 @@ app.post('/api/promotions', async (req, res) => {
   }
 });
 
-app.put('/api/promotions/:code', async (req, res) => {
+app.put('/api/promotions/:code', requireAdminAuth, async (req, res) => {
   try {
     const promotions = await db.getPromotions();
     const code = req.params.code.toUpperCase();
@@ -431,7 +497,7 @@ app.put('/api/promotions/:code', async (req, res) => {
   }
 });
 
-app.delete('/api/promotions/:code', async (req, res) => {
+app.delete('/api/promotions/:code', requireAdminAuth, async (req, res) => {
   try {
     let promotions = await db.getPromotions();
     const code = req.params.code.toUpperCase();
@@ -462,7 +528,7 @@ app.get('/api/store', async (req, res) => {
   }
 });
 
-app.put('/api/store', async (req, res) => {
+app.put('/api/store', requireAdminAuth, async (req, res) => {
   try {
     const validationError = validateStorePayload(req.body);
     if (validationError) {
@@ -491,7 +557,7 @@ app.put('/api/store', async (req, res) => {
 
 
 // --- Analytics Endpoints ---
-app.get('/api/analytics', async (req, res) => {
+app.get('/api/analytics', requireAdminAuth, async (req, res) => {
   try {
     const orders = await db.getOrders();
     const promotions = await db.getPromotions();

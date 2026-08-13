@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 
-export default function AdminProducts({ products, onProductCreated, onProductUpdated, onProductDeleted }) {
+export default function AdminProducts({ products, adminToken, onProductCreated, onProductUpdated, onProductDeleted }) {
   const [search, setSearch] = useState('');
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingProduct, setEditingProduct] = useState(null);
@@ -75,7 +75,10 @@ export default function AdminProducts({ products, onProductCreated, onProductUpd
         // Edit Mode
         const res = await fetch(`/api/products/${editingProduct.id}`, {
           method: 'PUT',
-          headers: { 'Content-Type': 'application/json' },
+          headers: {
+            'Content-Type': 'application/json',
+            ...(adminToken ? { 'x-admin-token': adminToken } : {})
+          },
           body: JSON.stringify(formattedData)
         });
         
@@ -86,7 +89,10 @@ export default function AdminProducts({ products, onProductCreated, onProductUpd
         // Add Mode
         const res = await fetch('/api/products', {
           method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
+          headers: {
+            'Content-Type': 'application/json',
+            ...(adminToken ? { 'x-admin-token': adminToken } : {})
+          },
           body: JSON.stringify(formattedData)
         });
 
@@ -108,7 +114,8 @@ export default function AdminProducts({ products, onProductCreated, onProductUpd
     
     try {
       const res = await fetch(`/api/products/${productId}`, {
-        method: 'DELETE'
+        method: 'DELETE',
+        headers: adminToken ? { 'x-admin-token': adminToken } : {}
       });
       if (!res.ok) throw new Error('Failed to delete product');
       onProductDeleted(productId);

@@ -30,6 +30,10 @@ export default function App() {
 
   // Alert system (toasts)
   const [toasts, setToasts] = useState([]);
+  const [adminToken, setAdminToken] = useState(() => window.localStorage.getItem('adminToken') || '');
+  const [adminSecretInput, setAdminSecretInput] = useState('');
+  const [adminLoginError, setAdminLoginError] = useState('');
+  const [isAdminAuthLoading, setIsAdminAuthLoading] = useState(false);
 
   useEffect(() => {
     const loadInitialData = async () => {
@@ -44,11 +48,38 @@ export default function App() {
   }, []);
 
   useEffect(() => {
-    if (view === 'admin') {
+    if (!adminToken) return;
+    const verifyAdmin = async () => {
+      try {
+        const response = await fetch('/api/admin/verify', {
+          headers: { 'x-admin-token': adminToken }
+        });
+        if (!response.ok) {
+          setAdminToken('');
+          window.localStorage.removeItem('adminToken');
+        }
+      } catch {
+        setAdminToken('');
+        window.localStorage.removeItem('adminToken');
+      }
+    };
+    verifyAdmin();
+  }, [adminToken]);
+
+  useEffect(() => {
+    if (adminToken) {
+      window.localStorage.setItem('adminToken', adminToken);
+    } else {
+      window.localStorage.removeItem('adminToken');
+    }
+  }, [adminToken]);
+
+  useEffect(() => {
+    if (view === 'admin' && adminToken) {
       fetchOrders();
       fetchAnalytics();
     }
-  }, [view]);
+  }, [view, adminToken]);
 
   const addToast = (text, type = 'info') => {
     const id = Date.now();
@@ -78,9 +109,18 @@ export default function App() {
     }
   };
 
-  const fetchOrders = async () => {
+  const fetchOrders = async (token = adminToken) => {
     try {
-      const res = await fetch('/api/orders');
+      const res = await fetch('/api/orders', {
+        headers: token ? { 'x-admin-token': token } : {}
+      });
+      if (!res.ok) {
+        if (res.status === 401) {
+          setAdminToken('');
+          setAdminLoginError('Admin session expired, please sign in again.');
+        }
+        throw new Error('Failed to load orders');
+      }
       const data = await res.json();
       setOrders(data.reverse()); // Show newest first in lists
     } catch (err) {
@@ -98,10 +138,19 @@ export default function App() {
     }
   };
 
-  const fetchAnalytics = async () => {
+  const fetchAnalytics = async (token = adminToken) => {
     try {
       setLoading(true);
-      const res = await fetch('/api/analytics');
+      const res = await fetch('/api/analytics', {
+        headers: token ? { 'x-admin-token': token } : {}
+      });
+      if (!res.ok) {
+        if (res.status === 401) {
+          setAdminToken('');
+          setAdminLoginError('Admin session expired, please sign in again.');
+        }
+        throw new Error('Failed to fetch analytics');
+      }
       const data = await res.json();
       setAnalyticsData(data);
     } catch (err) {
@@ -109,6 +158,41 @@ export default function App() {
     } finally {
       setLoading(false);
     }
+  };
+
+  const handleAdminLogin = async (secret) => {
+    setAdminLoginError('');
+    setIsAdminAuthLoading(true);
+    try {
+      const response = await fetch('/api/admin/login', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ secret })
+      });
+
+      if (!response.ok) {
+        const data = await response.json();
+        throw new Error(data.error || 'Unable to authenticate admin access');
+      }
+
+      const { token } = await response.json();
+      setAdminToken(token);
+      setView('admin');
+      addToast('Admin access granted.', 'success');
+      await Promise.all([fetchOrders(token), fetchAnalytics(token)]);
+    } catch (err) {
+      setAdminLoginError(err.message || 'Admin login failed');
+    } finally {
+      setIsAdminAuthLoading(false);
+    }
+  };
+
+  const handleAdminLogout = () => {
+    setAdminToken('');
+    setAdminSecretInput('');
+    setAdminLoginError('');
+    addToast('Admin portal locked.', 'info');
+    setView('shop');
   };
 
   // Cart operations
@@ -237,6 +321,7 @@ export default function App() {
         return (
           <AdminProducts 
             products={products} 
+            adminToken={adminToken}
             onProductCreated={handleProductCreated}
             onProductUpdated={handleProductUpdated}
             onProductDeleted={handleProductDeleted}
@@ -246,6 +331,7 @@ export default function App() {
         return (
           <AdminOrders 
             orders={orders} 
+            adminToken={adminToken}
             storeConfig={storeConfig}
             onOrderStatusUpdated={handleOrderStatusUpdated}
             onPrintReceipt={(order) => {
@@ -257,14 +343,15 @@ export default function App() {
       case 'promotions':
         return (
           <AdminPromotions 
-            promotions={promotions}
+            promotions={promotions} 
+            adminToken={adminToken}
             onPromoCreated={handlePromoCreated}
             onPromoUpdated={handlePromoUpdated}
             onPromoDeleted={handlePromoDeleted}
           />
         );
       case 'settings':
-        return <AdminSettings storeConfig={storeConfig} onConfigUpdated={handleConfigUpdated} />;
+        return <AdminSettings adminToken={adminToken} storeConfig={storeConfig} onConfigUpdated={handleConfigUpdated} />;
       default:
         return <AdminDashboard analyticsData={analyticsData} loading={loading} onRefresh={fetchAnalytics} />;
     }
@@ -318,84 +405,139 @@ export default function App() {
       {/* 4. ADMIN PORTAL VIEW */}
       {view === 'admin' && (
         <div className="admin-layout">
-          {/* SIDEBAR */}
-          <aside className="admin-sidebar">
-            <div className="admin-sidebar-header">
-              <span className="admin-logo">NOIR VIRTU</span>
-              <span className="admin-logo-badge">Admin</span>
-            </div>
+          {!adminToken ? (
+            <div className="admin-auth-panel" style={{ width: '100%', minHeight: '70vh', display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
+              <div className="admin-panel" style={{ maxWidth: '420px', width: '100%', padding: '2rem' }}>
+                <h2 style={{ marginBottom: '1rem', letterSpacing: '0.12em' }}>Admin Access Required</h2>
+                <p style={{ color: 'var(--text-secondary)', marginBottom: '1.5rem' }}>
+                  Enter the administrator access key to unlock the portal. This protects inventory management, order tracking, and store settings.
+                </p>
+                <form
+                  onSubmit={(e) => {
+                    e.preventDefault();
+                    handleAdminLogin(adminSecretInput);
+                  }}
+                >
+                  <div className="form-group">
+                    <label htmlFor="admin-secret">Admin Access Key</label>
+                    <input
+                      id="admin-secret"
+                      type="password"
+                      className="form-input"
+                      value={adminSecretInput}
+                      onChange={(e) => setAdminSecretInput(e.target.value)}
+                      placeholder="Enter your admin access key"
+                      autoFocus
+                    />
+                  </div>
 
-            <ul className="admin-nav">
-              <li>
-                <button 
-                  className={`admin-nav-item ${adminTab === 'dashboard' ? 'active' : ''}`}
-                  onClick={() => setAdminTab('dashboard')}
-                >
-                  📊 Dashboard Overview
-                </button>
-              </li>
-              <li>
-                <button 
-                  className={`admin-nav-item ${adminTab === 'products' ? 'active' : ''}`}
-                  onClick={() => setAdminTab('products')}
-                >
-                  👕 Products Manager
-                </button>
-              </li>
-              <li>
-                <button 
-                  className={`admin-nav-item ${adminTab === 'orders' ? 'active' : ''}`}
-                  onClick={() => setAdminTab('orders')}
-                >
-                  📦 Orders & Invoices
-                </button>
-              </li>
-              <li>
-                <button 
-                  className={`admin-nav-item ${adminTab === 'promotions' ? 'active' : ''}`}
-                  onClick={() => setAdminTab('promotions')}
-                >
-                  🏷️ VIP Promotions
-                </button>
-              </li>
-              <li>
-                <button 
-                  className={`admin-nav-item ${adminTab === 'settings' ? 'active' : ''}`}
-                  onClick={() => setAdminTab('settings')}
-                >
-                  ⚙️ Store Settings
-                </button>
-              </li>
-            </ul>
+                  {adminLoginError && (
+                    <div style={{ color: 'var(--danger)', marginBottom: '1rem', fontSize: '0.95rem' }}>
+                      {adminLoginError}
+                    </div>
+                  )}
 
-            <button 
-              className="btn btn-secondary" 
-              style={{ marginTop: 'auto', width: '100%', fontSize: '0.8rem', padding: '0.6rem' }}
-              onClick={() => setView('shop')}
-            >
-              ← Back to Shop
-            </button>
-          </aside>
-
-          {/* MAIN SPACE */}
-          <main className="admin-main">
-            <header className="admin-header">
-              <h2 className="admin-title">
-                {adminTab === 'dashboard' && 'Dashboard Overview'}
-                {adminTab === 'products' && 'Clothing Catalog Manager'}
-                {adminTab === 'orders' && 'Order Invoicing Tracker'}
-                {adminTab === 'promotions' && 'Promo Code Campaigns'}
-                {adminTab === 'settings' && 'Store Configuration settings'}
-              </h2>
-              <div style={{ color: 'var(--text-secondary)', fontSize: '0.85rem', fontFamily: 'var(--font-mono)' }}>
-                System: ONLINE // DB: LOCAL FS
+                  <div className="modal-actions" style={{ gap: '0.75rem' }}>
+                    <button type="submit" className="btn" disabled={isAdminAuthLoading}>
+                      {isAdminAuthLoading ? 'Verifying...' : 'Unlock Admin Portal'}
+                    </button>
+                    <button
+                      type="button"
+                      className="btn btn-secondary"
+                      onClick={() => setView('shop')}
+                    >
+                      Back to Shop
+                    </button>
+                  </div>
+                </form>
               </div>
-            </header>
-            
-            <Suspense fallback={<div style={{ padding: '2rem', color: 'var(--text-secondary)' }}>Loading admin panel…</div>}>
-              {renderAdminTab()}
-            </Suspense>
-          </main>
+            </div>
+          ) : (
+            <>
+              <aside className="admin-sidebar">
+                <div className="admin-sidebar-header">
+                  <span className="admin-logo">NOIR VIRTU</span>
+                  <span className="admin-logo-badge">Admin</span>
+                </div>
+
+                <ul className="admin-nav">
+                  <li>
+                    <button 
+                      className={`admin-nav-item ${adminTab === 'dashboard' ? 'active' : ''}`}
+                      onClick={() => setAdminTab('dashboard')}
+                    >
+                      📊 Dashboard Overview
+                    </button>
+                  </li>
+                  <li>
+                    <button 
+                      className={`admin-nav-item ${adminTab === 'products' ? 'active' : ''}`}
+                      onClick={() => setAdminTab('products')}
+                    >
+                      👕 Products Manager
+                    </button>
+                  </li>
+                  <li>
+                    <button 
+                      className={`admin-nav-item ${adminTab === 'orders' ? 'active' : ''}`}
+                      onClick={() => setAdminTab('orders')}
+                    >
+                      📦 Orders & Invoices
+                    </button>
+                  </li>
+                  <li>
+                    <button 
+                      className={`admin-nav-item ${adminTab === 'promotions' ? 'active' : ''}`}
+                      onClick={() => setAdminTab('promotions')}
+                    >
+                      🏷️ VIP Promotions
+                    </button>
+                  </li>
+                  <li>
+                    <button 
+                      className={`admin-nav-item ${adminTab === 'settings' ? 'active' : ''}`}
+                      onClick={() => setAdminTab('settings')}
+                    >
+                      ⚙️ Store Settings
+                    </button>
+                  </li>
+                </ul>
+
+                <button 
+                  className="btn btn-secondary" 
+                  style={{ marginTop: 'auto', width: '100%', fontSize: '0.8rem', padding: '0.6rem' }}
+                  onClick={() => setView('shop')}
+                >
+                  ← Back to Shop
+                </button>
+              </aside>
+
+              {/* MAIN SPACE */}
+              <main className="admin-main">
+                <header className="admin-header">
+                  <div>
+                    <h2 className="admin-title">
+                      {adminTab === 'dashboard' && 'Dashboard Overview'}
+                      {adminTab === 'products' && 'Clothing Catalog Manager'}
+                      {adminTab === 'orders' && 'Order Invoicing Tracker'}
+                      {adminTab === 'promotions' && 'Promo Code Campaigns'}
+                      {adminTab === 'settings' && 'Store Configuration settings'}
+                    </h2>
+                    <div style={{ color: 'var(--text-secondary)', fontSize: '0.85rem', fontFamily: 'var(--font-mono)' }}>
+                      System: ONLINE // DB: LOCAL FS
+                    </div>
+                  </div>
+                  <button className="btn btn-secondary" style={{ height: '2.5rem' }} onClick={handleAdminLogout}>
+                    Lock Portal
+                  </button>
+                </header>
+                
+                <Suspense fallback={<div style={{ padding: '2rem', color: 'var(--text-secondary)' }}>Loading admin panel…</div>}>
+                  {renderAdminTab()}
+                </Suspense>
+              </main>
+            </>
+          )}
         </div>
       )}
 

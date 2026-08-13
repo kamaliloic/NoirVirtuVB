@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 
-export default function AdminSettings({ storeConfig, onConfigUpdated }) {
+export default function AdminSettings({ adminToken, storeConfig, onConfigUpdated }) {
   const [formData, setFormData] = useState({
     name: storeConfig.name || 'NOIR VIRTU FLAGSHIP',
     address: storeConfig.address || '712 Melrose Ave, Los Angeles, CA 90046',
@@ -36,7 +36,10 @@ export default function AdminSettings({ storeConfig, onConfigUpdated }) {
 
       const res = await fetch('/api/store', {
         method: 'PUT',
-        headers: { 'Content-Type': 'application/json' },
+        headers: {
+          'Content-Type': 'application/json',
+          ...(adminToken ? { 'x-admin-token': adminToken } : {})
+        },
         body: JSON.stringify(payload)
       });
 

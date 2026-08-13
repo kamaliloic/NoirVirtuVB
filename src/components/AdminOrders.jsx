@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 
-export default function AdminOrders({ orders, onOrderStatusUpdated, onPrintReceipt }) {
+export default function AdminOrders({ orders, adminToken, onOrderStatusUpdated, onPrintReceipt }) {
   const [statusFilter, setStatusFilter] = useState('ALL');
   const [selectedOrder, setSelectedOrder] = useState(null);
 
@@ -8,7 +8,10 @@ export default function AdminOrders({ orders, onOrderStatusUpdated, onPrintRecei
     try {
       const res = await fetch(`/api/orders/${orderId}`, {
         method: 'PUT',
-        headers: { 'Content-Type': 'application/json' },
+        headers: {
+          'Content-Type': 'application/json',
+          ...(adminToken ? { 'x-admin-token': adminToken } : {})
+        },
         body: JSON.stringify({ status: newStatus })
       });
       if (!res.ok) throw new Error('Failed to update status');
