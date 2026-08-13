@@ -1,32 +1,11 @@
 [
   {
-    "id": "Noir Teea 1",
-    "name": "Distressed Tee shirt",
-    "description": "A T shirt that fits your soul",
-    "price": 17000,
+    "id": "NOIR-MULTI-77",
+    "name": "Vandal Cargo Pants",
+    "description": "cgfgfdgfdgfhdgdfgfgh",
+    "price": 12000,
     "images": [
-      "/NVIMAGES/nv hands back.jpg"
-    ],
-    "sizes": [
-      "M",
-      "L",
-      "XL"
-    ],
-    "categories": [
-      "Tops"
-    ],
-    "stock": 2,
-    "collections": [
-      "The Eighth Archive"
-    ]
-  },
-  {
-    "id": "random",
-    "name": "Noir Off Tee",
-    "description": "In memory of Virgil Abloh",
-    "price": 16999.99,
-    "images": [
-      "/images/uploads/1783376575720-NOIROFFTEE.jpg"
+      "/images/cargo_pants.jpg"
     ],
     "sizes": [
       "S",
@@ -43,12 +22,12 @@
     ]
   },
   {
-    "id": "RANDO",
-    "name": "Noir Off Tee",
-    "description": "BEST TEEE",
-    "price": 16000,
+    "id": "NOIR-960",
+    "name": "",
+    "description": "",
+    "price": 0,
     "images": [
-      "/images/uploads/1783375994007-noiroffback.png"
+      "/images/placeholder.jpg"
     ],
     "sizes": [
       "S",
@@ -59,7 +38,28 @@
     "categories": [
       "Tops"
     ],
-    "stock": 23,
+    "stock": 0,
+    "collections": [
+      "The Eighth Archive"
+    ]
+  },
+  {
+    "id": "TEST-001",
+    "name": "Verifiable Street Tee",
+    "description": "Test tee",
+    "price": 25000,
+    "images": [
+      "/images/graphic_tee.jpg"
+    ],
+    "sizes": [
+      "S",
+      "M",
+      "L"
+    ],
+    "categories": [
+      "Tops"
+    ],
+    "stock": 100,
     "collections": [
       "The Eighth Archive"
     ]

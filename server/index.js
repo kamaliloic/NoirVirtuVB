@@ -16,7 +16,7 @@ app.get('/api/products', async (req, res) => {
   try {
     const products = await db.getProducts();
     res.json(products);
-  } catch (err) {
+  } catch {
     res.status(500).json({ error: 'Failed to retrieve products' });
   }
 });
@@ -44,7 +44,7 @@ app.post('/api/products', async (req, res) => {
     products.push(newProduct);
     await db.saveProducts(products);
     res.status(201).json(newProduct);
-  } catch (err) {
+  } catch {
     res.status(500).json({ error: 'Failed to create product' });
   }
 });
@@ -72,7 +72,7 @@ app.put('/api/products/:id', async (req, res) => {
     products[index] = updatedProduct;
     await db.saveProducts(products);
     res.json(updatedProduct);
-  } catch (err) {
+  } catch {
     res.status(500).json({ error: 'Failed to update product' });
   }
 });
@@ -88,7 +88,7 @@ app.delete('/api/products/:id', async (req, res) => {
     products = products.filter(p => p.id !== req.params.id);
     await db.saveProducts(products);
     res.json({ message: 'Product successfully deleted' });
-  } catch (err) {
+  } catch {
     res.status(500).json({ error: 'Failed to delete product' });
   }
 });
@@ -99,7 +99,7 @@ app.get('/api/orders', async (req, res) => {
   try {
     const orders = await db.getOrders();
     res.json(orders);
-  } catch (err) {
+  } catch {
     res.status(500).json({ error: 'Failed to retrieve orders' });
   }
 });
@@ -201,7 +201,7 @@ app.put('/api/orders/:id', async (req, res) => {
     orders[index].status = req.body.status || orders[index].status;
     await db.saveOrders(orders);
     res.json(orders[index]);
-  } catch (err) {
+  } catch {
     res.status(500).json({ error: 'Failed to update order' });
   }
 });
@@ -212,7 +212,7 @@ app.get('/api/promotions', async (req, res) => {
   try {
     const promotions = await db.getPromotions();
     res.json(promotions);
-  } catch (err) {
+  } catch {
     res.status(500).json({ error: 'Failed to retrieve promotions' });
   }
 });
@@ -237,7 +237,7 @@ app.post('/api/promotions', async (req, res) => {
     promotions.push(newPromo);
     await db.savePromotions(promotions);
     res.status(201).json(newPromo);
-  } catch (err) {
+  } catch {
     res.status(500).json({ error: 'Failed to create promotion' });
   }
 });
@@ -262,7 +262,7 @@ app.put('/api/promotions/:code', async (req, res) => {
 
     await db.savePromotions(promotions);
     res.json(promotions[index]);
-  } catch (err) {
+  } catch {
     res.status(500).json({ error: 'Failed to update promotion' });
   }
 });
@@ -280,7 +280,7 @@ app.delete('/api/promotions/:code', async (req, res) => {
     promotions = promotions.filter(p => p.code !== code);
     await db.savePromotions(promotions);
     res.json({ message: 'Promotion successfully deleted' });
-  } catch (err) {
+  } catch {
     res.status(500).json({ error: 'Failed to delete promotion' });
   }
 });
@@ -291,7 +291,7 @@ app.get('/api/store', async (req, res) => {
   try {
     const config = await db.getStoreConfig();
     res.json(config);
-  } catch (err) {
+  } catch {
     res.status(500).json({ error: 'Failed to retrieve store configuration' });
   }
 });
@@ -314,7 +314,7 @@ app.put('/api/store', async (req, res) => {
 
     await db.saveStoreConfig(updatedConfig);
     res.json(updatedConfig);
-  } catch (err) {
+  } catch {
     res.status(500).json({ error: 'Failed to update store configuration' });
   }
 });
@@ -333,7 +333,7 @@ app.post('/api/admin/login', async (req, res) => {
     } else {
       res.status(401).json({ error: 'Invalid email or password' });
     }
-  } catch (err) {
+  } catch {
     res.status(500).json({ error: 'Authentication failed' });
   }
 });

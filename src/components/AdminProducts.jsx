@@ -36,8 +36,8 @@ export default function AdminProducts({ products, onProductCreated, onProductUpd
       return;
     }
 
-    if (formData.images.length >= 4) {
-      setUploadError('At most 4 images are allowed per product.');
+    if (formData.images.length >= 1) {
+      setUploadError('Only 1 image is allowed per product.');
       return;
     }
     
@@ -84,7 +84,7 @@ export default function AdminProducts({ products, onProductCreated, onProductUpd
 
   const handleDragOver = (e) => {
     e.preventDefault();
-    if (formData.images.length < 4 && !uploading) {
+    if (formData.images.length < 1 && !uploading) {
       setDragging(true);
     }
   };
@@ -97,14 +97,14 @@ export default function AdminProducts({ products, onProductCreated, onProductUpd
   const handleDrop = (e) => {
     e.preventDefault();
     setDragging(false);
-    if (formData.images.length >= 4 || uploading) return;
+    if (formData.images.length >= 1 || uploading) return;
     if (e.dataTransfer.files && e.dataTransfer.files[0]) {
       processFile(e.dataTransfer.files[0]);
     }
   };
 
   const handleFileSelect = (e) => {
-    if (formData.images.length >= 4 || uploading) return;
+    if (formData.images.length >= 1 || uploading) return;
     if (e.target.files && e.target.files[0]) {
       processFile(e.target.files[0]);
     }
@@ -138,7 +138,7 @@ export default function AdminProducts({ products, onProductCreated, onProductUpd
       categories: product.categories.join(', '),
       stock: product.stock,
       collections: product.collections.join(', '),
-      images: Array.isArray(product.images) ? product.images : [product.images]
+      images: Array.isArray(product.images) ? product.images.slice(0, 1) : (product.images ? [product.images] : [])
     });
     setUploadError('');
     setIsModalOpen(true);
@@ -422,13 +422,13 @@ export default function AdminProducts({ products, onProductCreated, onProductUpd
               </div>
 
               <div className="form-group" style={{ gridColumn: 'span 2', marginTop: '0.5rem' }}>
-                <label>Product Imagery (At most 4 images)</label>
+                <label>Product Imagery (Only 1 image)</label>
                 <div
                   onDragOver={handleDragOver}
                   onDragLeave={handleDragLeave}
                   onDrop={handleDrop}
                   onClick={() => {
-                    if (formData.images.length < 4 && !uploading) {
+                    if (formData.images.length < 1 && !uploading) {
                       document.getElementById('file-upload-input').click();
                     }
                   }}
@@ -437,7 +437,7 @@ export default function AdminProducts({ products, onProductCreated, onProductUpd
                     borderRadius: '4px',
                     padding: '2rem 1rem',
                     textAlign: 'center',
-                    cursor: formData.images.length < 4 && !uploading ? 'pointer' : 'default',
+                    cursor: formData.images.length < 1 && !uploading ? 'pointer' : 'default',
                     background: dragging ? 'rgba(255, 255, 255, 0.03)' : 'var(--bg-tertiary)',
                     transition: 'all 0.2s ease',
                     position: 'relative',
@@ -446,7 +446,7 @@ export default function AdminProducts({ products, onProductCreated, onProductUpd
                     alignItems: 'center',
                     justifyContent: 'center',
                     minHeight: '130px',
-                    opacity: formData.images.length >= 4 ? 0.7 : 1
+                    opacity: formData.images.length >= 1 ? 0.7 : 1
                   }}
                 >
                   <input
@@ -469,13 +469,13 @@ export default function AdminProducts({ products, onProductCreated, onProductUpd
                       }}></div>
                       <span style={{ fontSize: '0.8rem', color: 'var(--text-secondary)' }}>Uploading design files...</span>
                     </div>
-                  ) : formData.images.length >= 4 ? (
+                  ) : formData.images.length >= 1 ? (
                     <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
                       <span style={{ fontSize: '0.85rem', fontWeight: '500', color: 'var(--text-secondary)', marginBottom: '0.25rem' }}>
-                        Maximum images added (4/4)
+                        Product image added (1/1)
                       </span>
                       <span style={{ fontSize: '0.75rem', color: 'var(--text-secondary)' }}>
-                        Remove an existing image below to upload a replacement
+                        Remove the image below to upload a replacement
                       </span>
                     </div>
                   ) : (
@@ -486,7 +486,7 @@ export default function AdminProducts({ products, onProductCreated, onProductUpd
                         <line x1="12" y1="3" x2="12" y2="15"></line>
                       </svg>
                       <span style={{ fontSize: '0.85rem', fontWeight: '500', marginBottom: '0.25rem' }}>
-                        Drag & drop apparel layout here ({formData.images.length}/4)
+                        Drag & drop apparel layout here ({formData.images.length}/1)
                       </span>
                       <span style={{ fontSize: '0.75rem', color: 'var(--text-secondary)' }}>
                         or click to select from local storage
@@ -498,7 +498,7 @@ export default function AdminProducts({ products, onProductCreated, onProductUpd
                 {formData.images.length > 0 && (
                   <div style={{ marginTop: '1rem', width: '100%', textAlign: 'left' }}>
                     <div style={{ fontSize: '0.75rem', fontWeight: 'bold', textTransform: 'uppercase', color: 'var(--text-secondary)', marginBottom: '0.5rem' }}>
-                      Added Imagery Confirmation ({formData.images.length}/4)
+                      Added Imagery Confirmation ({formData.images.length}/1)
                     </div>
                     <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
                       {formData.images.map((img, idx) => (
@@ -521,7 +521,7 @@ export default function AdminProducts({ products, onProductCreated, onProductUpd
                             marginRight: '0.5rem',
                             color: 'var(--success)'
                           }}>
-                            ✓ Image {idx + 1} added: {img.split('/').pop()}
+                            ✓ Image added: {img.split('/').pop()}
                           </span>
                           <button
                             type="button"
@@ -557,7 +557,7 @@ export default function AdminProducts({ products, onProductCreated, onProductUpd
                 
                 <div style={{ marginTop: '1rem' }}>
                   <label htmlFor="prod-images" style={{ fontSize: '0.75rem', color: 'var(--text-secondary)' }}>
-                    Or enter manual image paths/URLs (comma-separated):
+                    Or enter manual image path/URL:
                   </label>
                   <input 
                     type="text" 
@@ -565,12 +565,13 @@ export default function AdminProducts({ products, onProductCreated, onProductUpd
                     id="prod-images"
                     className="form-input" 
                     style={{ marginTop: '0.25rem' }}
-                    placeholder="/images/hoodie_black.jpg, /images/another.jpg"
+                    placeholder="/images/hoodie_black.jpg"
                     value={Array.isArray(formData.images) ? formData.images.join(', ') : formData.images}
                     onChange={(e) => {
+                      const val = e.target.value.trim();
                       setFormData({
                         ...formData,
-                        images: e.target.value.split(',').map(img => img.trim()).filter(img => img !== '')
+                        images: val ? [val] : []
                       });
                     }}
                   />

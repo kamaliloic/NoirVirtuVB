@@ -30,7 +30,6 @@ export default function CustomerShop({ onProductSelect, cartItemsCount, onCartOp
 
   // Extract all categories
   const categories = ['ALL', 'TOPS', 'BOTTOMS', 'ACCESSORIES'];
-  const collections = ['ALL', 'THE EIGHTH ARCHIVE', 'NEW ARRIVALS', 'BEST SELLERS'];
 
   const filteredProducts = products.filter(product => {
     const categoryMatch = selectedCategory === 'ALL' || 
