@@ -308,8 +308,8 @@ app.put('/api/store', async (req, res) => {
       taxRate: req.body.taxRate !== undefined ? parseFloat(req.body.taxRate) : config.taxRate,
       shippingFee: req.body.shippingFee !== undefined ? parseFloat(req.body.shippingFee) : config.shippingFee,
       freeShippingThreshold: req.body.freeShippingThreshold !== undefined ? parseFloat(req.body.freeShippingThreshold) : config.freeShippingThreshold,
-      adminEmail: req.body.adminEmail !== undefined ? req.body.adminEmail : (config.adminEmail || 'admin@noirvirtu.com'),
-      adminPassword: req.body.adminPassword !== undefined ? req.body.adminPassword : (config.adminPassword || 'admin')
+      adminEmail: req.body.adminEmail !== undefined ? req.body.adminEmail : (config.adminEmail || 'noirvirtu@gmail.com'),
+      adminPassword: req.body.adminPassword !== undefined ? req.body.adminPassword : (config.adminPassword || 'noir123')
     };
 
     await db.saveStoreConfig(updatedConfig);
@@ -319,22 +319,85 @@ app.put('/api/store', async (req, res) => {
   }
 });
 
-// --- Admin Authentication Endpoint ---
+// --- Admin Authentication Endpoints ---
 app.post('/api/admin/login', async (req, res) => {
   try {
     const { email, password } = req.body;
+    if (!email || !email.trim()) {
+      return res.status(400).json({ error: 'Email is required' });
+    }
+
+    const cleanEmail = email.trim().toLowerCase();
     const config = await db.getStoreConfig();
-    
-    const expectedEmail = config.adminEmail || 'admin@noirvirtu.com';
-    const expectedPassword = config.adminPassword || 'admin';
-    
-    if (email === expectedEmail && password === expectedPassword) {
-      res.json({ success: true, token: 'nv-session-tok-' + Date.now() });
+
+    // If no admin email is configured yet (first email to sign in claims Admin)
+    if (!config.adminEmail || !config.adminEmail.trim()) {
+      config.adminEmail = cleanEmail;
+      if (password) {
+        config.adminPassword = password;
+      }
+      await db.saveStoreConfig(config);
+      return res.json({
+        success: true,
+        token: 'nv-session-tok-' + Date.now(),
+        firstAdminClaimed: true,
+        adminEmail: cleanEmail,
+        message: `Store Admin successfully registered to ${cleanEmail}`
+      });
+    }
+
+    const expectedEmail = config.adminEmail.trim().toLowerCase();
+    const expectedPassword = config.adminPassword || 'noir123';
+
+    if (cleanEmail === expectedEmail && password === expectedPassword) {
+      res.json({ success: true, token: 'nv-session-tok-' + Date.now(), adminEmail: expectedEmail });
     } else {
       res.status(401).json({ error: 'Invalid email or password' });
     }
   } catch (err) {
     res.status(500).json({ error: 'Authentication failed' });
+  }
+});
+
+app.post('/api/admin/google-login', async (req, res) => {
+  try {
+    const { email, name } = req.body;
+    if (!email || !email.trim()) {
+      return res.status(400).json({ error: 'Google email is required' });
+    }
+
+    const cleanEmail = email.trim().toLowerCase();
+    const config = await db.getStoreConfig();
+
+    // If no admin email is configured yet (first email to sign in claims Admin)
+    if (!config.adminEmail || !config.adminEmail.trim()) {
+      config.adminEmail = cleanEmail;
+      await db.saveStoreConfig(config);
+      return res.json({
+        success: true,
+        token: 'nv-session-tok-g-' + Date.now(),
+        firstAdminClaimed: true,
+        adminEmail: cleanEmail,
+        message: `Store Admin successfully registered to Gmail account ${cleanEmail}`
+      });
+    }
+
+    const expectedEmail = config.adminEmail.trim().toLowerCase();
+
+    if (cleanEmail === expectedEmail) {
+      res.json({
+        success: true,
+        token: 'nv-session-tok-g-' + Date.now(),
+        adminEmail: cleanEmail,
+        user: { email: cleanEmail, name: name || 'Admin' }
+      });
+    } else {
+      res.status(401).json({
+        error: `Unauthorized Gmail account (${cleanEmail}). Admin access is assigned to: ${config.adminEmail}`
+      });
+    }
+  } catch (err) {
+    res.status(500).json({ error: 'Google authentication failed' });
   }
 });
 

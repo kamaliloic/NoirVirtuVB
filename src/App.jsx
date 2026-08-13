@@ -383,10 +383,12 @@ export default function App() {
       {view === "admin" &&
         (!isAdminAuthenticated ? (
           <AdminLogin
+            storeConfig={storeConfig}
             onLoginSuccess={() => {
               setIsAdminAuthenticated(true);
               sessionStorage.setItem("noir_admin_authenticated", "true");
-              addToast("Welcome back, Administrator.", "success");
+              fetchStoreConfig();
+              addToast("Welcome, Administrator.", "success");
             }}
             onCancel={() => setView("shop")}
           />

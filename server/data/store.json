@@ -6,6 +6,6 @@
   "taxRate": 0,
   "shippingFee": 2000,
   "freeShippingThreshold": 150000,
-  "adminEmail": "admin@noirvirtu.com",
-  "adminPassword": "admin123"
+  "adminEmail": "noirvirtu@gmail.com",
+  "adminPassword": "noir123"
 }

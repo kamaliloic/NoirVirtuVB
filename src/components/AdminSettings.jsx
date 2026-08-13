@@ -10,7 +10,7 @@ export default function AdminSettings({ storeConfig, onConfigUpdated }) {
     taxRate: storeConfig.taxRate !== undefined ? storeConfig.taxRate : 8.25,
     shippingFee: storeConfig.shippingFee !== undefined ? storeConfig.shippingFee : 10.00,
     freeShippingThreshold: storeConfig.freeShippingThreshold !== undefined ? storeConfig.freeShippingThreshold : 150.00,
-    adminEmail: storeConfig.adminEmail || 'admin@noirvirtu.com',
+    adminEmail: storeConfig.adminEmail !== undefined ? storeConfig.adminEmail : '',
     adminPassword: storeConfig.adminPassword || 'admin'
   });
 
@@ -159,27 +159,40 @@ export default function AdminSettings({ storeConfig, onConfigUpdated }) {
         </div>
 
         <div style={{ borderTop: '1px dashed var(--border-color)', paddingTop: '1.5rem', marginTop: '1.5rem' }}>
-          <h4 style={{
-            textTransform: 'uppercase',
-            fontSize: '0.75rem',
-            letterSpacing: '0.1em',
-            color: 'var(--text-primary)',
-            marginBottom: '1rem',
-            fontFamily: 'var(--font-display)',
-            fontWeight: '700'
-          }}>
-            Admin Portal Access Credentials
-          </h4>
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1rem', flexWrap: 'wrap', gap: '0.5rem' }}>
+            <h4 style={{
+              textTransform: 'uppercase',
+              fontSize: '0.75rem',
+              letterSpacing: '0.1em',
+              color: 'var(--text-primary)',
+              fontFamily: 'var(--font-display)',
+              fontWeight: '700',
+              margin: 0
+            }}>
+              Admin Portal Access Credentials
+            </h4>
+            <button
+              type="button"
+              className="btn btn-secondary"
+              style={{ fontSize: '0.7rem', padding: '0.35rem 0.75rem' }}
+              onClick={() => {
+                setFormData(prev => ({ ...prev, adminEmail: '' }));
+                setMessage('Admin email cleared. Save changes to re-enable First Sign-In Claim.');
+              }}
+            >
+              🔄 Clear Admin Email (Re-enable First Sign-In Claim)
+            </button>
+          </div>
           
           <div className="form-row">
             <div className="form-group">
-              <label htmlFor="admin-email-setting">Admin Login Email</label>
+              <label htmlFor="admin-email-setting">Admin Login Email (Leave blank for First Sign-In Claim)</label>
               <input 
                 type="email" 
                 name="adminEmail" 
                 id="admin-email-setting"
                 className="form-input" 
-                required 
+                placeholder="Unclaimed - First Sign-In will claim Admin"
                 value={formData.adminEmail}
                 onChange={handleInputChange}
                 style={{ backgroundColor: 'var(--bg-primary)' }}
