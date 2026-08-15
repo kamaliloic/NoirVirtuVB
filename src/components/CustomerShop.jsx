@@ -43,7 +43,7 @@ export default function CustomerShop({ onProductSelect, cartItemsCount, onCartOp
 
   // Extract all categories
   const categories = ['ALL', 'TOPS', 'BOTTOMS', 'ACCESSORIES'];
-  const collections = ['ALL', 'THE EIGHTH ARCHIVE', 'NEW ARRIVALS', 'BEST SELLERS'];
+  const collections = ['ALL', 'NEW ARRIVALS', 'BEST SELLERS'];
 
   const filteredProducts = products.filter(product => {
     const categoryMatch = selectedCategory === 'ALL' || 
@@ -74,21 +74,13 @@ export default function CustomerShop({ onProductSelect, cartItemsCount, onCartOp
           <li>
             <a 
               href="#" 
-              className={selectedCollection === 'THE EIGHTH ARCHIVE' ? 'active' : ''} 
-              onClick={(e) => { e.preventDefault(); setSelectedCollection('THE EIGHTH ARCHIVE'); }}
-            >
-              The Eighth Archive
-            </a>
-          </li>
-          <li>
-            <a 
-              href="#" 
               className={selectedCollection === 'NEW ARRIVALS' ? 'active' : ''} 
               onClick={(e) => { e.preventDefault(); setSelectedCollection('NEW ARRIVALS'); }}
             >
               New Arrivals
             </a>
           </li>
+
           <li>
             <a 
               href="#" 
