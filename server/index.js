@@ -331,23 +331,7 @@ app.post('/api/admin/login', async (req, res) => {
     const cleanEmail = email.trim().toLowerCase();
     const config = await db.getStoreConfig();
 
-    // If no admin email is configured yet (first email to sign in claims Admin)
-    if (!config.adminEmail || !config.adminEmail.trim()) {
-      config.adminEmail = cleanEmail;
-      if (password) {
-        config.adminPassword = password;
-      }
-      await db.saveStoreConfig(config);
-      return res.json({
-        success: true,
-        token: 'nv-session-tok-' + Date.now(),
-        firstAdminClaimed: true,
-        adminEmail: cleanEmail,
-        message: `Store Admin successfully registered to ${cleanEmail}`
-      });
-    }
-
-    const expectedEmail = config.adminEmail.trim().toLowerCase();
+    const expectedEmail = (config.adminEmail || 'noirvirtu@gmail.com').trim().toLowerCase();
     const expectedPassword = config.adminPassword || 'noir123';
 
     if (cleanEmail === expectedEmail && password === expectedPassword) {
@@ -360,47 +344,6 @@ app.post('/api/admin/login', async (req, res) => {
   }
 });
 
-app.post('/api/admin/google-login', async (req, res) => {
-  try {
-    const { email, name } = req.body;
-    if (!email || !email.trim()) {
-      return res.status(400).json({ error: 'Google email is required' });
-    }
-
-    const cleanEmail = email.trim().toLowerCase();
-    const config = await db.getStoreConfig();
-
-    // If no admin email is configured yet (first email to sign in claims Admin)
-    if (!config.adminEmail || !config.adminEmail.trim()) {
-      config.adminEmail = cleanEmail;
-      await db.saveStoreConfig(config);
-      return res.json({
-        success: true,
-        token: 'nv-session-tok-g-' + Date.now(),
-        firstAdminClaimed: true,
-        adminEmail: cleanEmail,
-        message: `Store Admin successfully registered to Gmail account ${cleanEmail}`
-      });
-    }
-
-    const expectedEmail = config.adminEmail.trim().toLowerCase();
-
-    if (cleanEmail === expectedEmail) {
-      res.json({
-        success: true,
-        token: 'nv-session-tok-g-' + Date.now(),
-        adminEmail: cleanEmail,
-        user: { email: cleanEmail, name: name || 'Admin' }
-      });
-    } else {
-      res.status(401).json({
-        error: `Unauthorized Gmail account (${cleanEmail}). Admin access is assigned to: ${config.adminEmail}`
-      });
-    }
-  } catch (err) {
-    res.status(500).json({ error: 'Google authentication failed' });
-  }
-});
 
 
 // --- Analytics Endpoints ---
