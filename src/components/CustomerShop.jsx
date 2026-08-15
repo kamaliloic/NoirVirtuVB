@@ -123,8 +123,9 @@ export default function CustomerShop({ onProductSelect, cartItemsCount, onCartOp
         <section className="hero-section">
           <div className="hero-subtitle">NOIR VIRTU // STREETWEAR ARCHIVE</div>
           <h1 className="hero-title">
-            THE ARCHITECTURE <span>OF SILENT REBELLION</span>
+            RWANDAN <span>STREETWEAR</span>
           </h1>
+
           <button 
             className="btn" 
             onClick={() => {
