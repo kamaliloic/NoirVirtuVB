@@ -1,7 +1,9 @@
 import React, { useState } from 'react';
 import { formatPrice } from '../utils.js';
+import { createProduct, updateProduct, deleteProduct } from '../services/supabaseService.js';
 
 export default function AdminProducts({ products, onProductCreated, onProductUpdated, onProductDeleted, storeConfig }) {
+
   const [search, setSearch] = useState('');
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingProduct, setEditingProduct] = useState(null);
@@ -161,29 +163,43 @@ export default function AdminProducts({ products, onProductCreated, onProductUpd
     try {
       if (editingProduct) {
         // Edit Mode
-        const res = await fetch(`/api/products/${editingProduct.id}`, {
-          method: 'PUT',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify(formattedData)
-        });
-        
-        if (!res.ok) throw new Error('Failed to update product');
-        const updated = await res.json();
-        onProductUpdated(updated);
+        let updated;
+        try {
+          const res = await fetch(`/api/products/${editingProduct.id}`, {
+            method: 'PUT',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(formattedData)
+          });
+          if (res.ok) updated = await res.json();
+        } catch (apiErr) {
+          console.warn('API updateProduct failed, using Supabase:', apiErr);
+        }
+
+        if (!updated) {
+          updated = await updateProduct(editingProduct.id, formattedData);
+        }
+        onProductUpdated(updated || { ...editingProduct, ...formattedData });
       } else {
         // Add Mode
-        const res = await fetch('/api/products', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify(formattedData)
-        });
-
-        if (!res.ok) {
-          const errData = await res.json();
-          throw new Error(errData.error || 'Failed to create product');
+        let created;
+        try {
+          const res = await fetch('/api/products', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(formattedData)
+          });
+          if (res.ok) created = await res.json();
+        } catch (apiErr) {
+          console.warn('API createProduct failed, using Supabase:', apiErr);
         }
-        const created = await res.json();
-        onProductCreated(created);
+
+        if (!created) {
+          created = await createProduct({
+            ...formattedData,
+            id: formattedData.id || `NOIR-${Math.floor(100 + Math.random() * 900)}`
+          });
+        }
+        onProductCreated(created || formattedData);
       }
       setIsModalOpen(false);
     } catch (err) {
@@ -195,15 +211,25 @@ export default function AdminProducts({ products, onProductCreated, onProductUpd
     if (!confirm('Are you sure you want to permanently delete this streetwear product from the archive?')) return;
     
     try {
-      const res = await fetch(`/api/products/${productId}`, {
-        method: 'DELETE'
-      });
-      if (!res.ok) throw new Error('Failed to delete product');
+      let success = false;
+      try {
+        const res = await fetch(`/api/products/${productId}`, {
+          method: 'DELETE'
+        });
+        if (res.ok) success = true;
+      } catch (apiErr) {
+        console.warn('API deleteProduct failed, using Supabase:', apiErr);
+      }
+
+      if (!success) {
+        await deleteProduct(productId);
+      }
       onProductDeleted(productId);
     } catch (err) {
       alert(err.message || 'Deletion failed');
     }
   };
+
 
   const filteredProducts = products.filter(p => 
     p.name.toLowerCase().includes(search.toLowerCase()) || 

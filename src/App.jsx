@@ -9,6 +9,14 @@ import AdminOrders from "./components/AdminOrders";
 import AdminPromotions from "./components/AdminPromotions";
 import AdminSettings from "./components/AdminSettings";
 import AdminLogin from "./components/AdminLogin";
+import {
+  getProducts,
+  getOrders,
+  getPromotions,
+  getStoreConfig,
+  getAnalyticsData
+} from "./services/supabaseService.js";
+
 // Local file system is used as the primary database
 
 export default function App() {
@@ -62,11 +70,17 @@ export default function App() {
   };
 
   const fetchStoreConfig = async () => {
+
     try {
-      const res = await fetch("/api/store");
-      if (!res.ok) throw new Error("Failed to fetch store config");
-      const data = await res.json();
-      setStoreConfig(data);
+      let data;
+      try {
+        const res = await fetch("/api/store");
+        if (res.ok) data = await res.json();
+      } catch (e) {
+        console.warn("API /api/store unavailable, using Supabase service");
+      }
+      if (!data) data = await getStoreConfig();
+      setStoreConfig(data || {});
     } catch (err) {
       console.error("Failed to load store config", err);
     }
@@ -74,10 +88,17 @@ export default function App() {
 
   const fetchProducts = async () => {
     try {
-      const res = await fetch("/api/products");
-      if (!res.ok) throw new Error("Failed to fetch products");
-      const data = await res.json();
-      setProducts(data);
+      let data;
+      try {
+        const res = await fetch("/api/products");
+        if (res.ok) data = await res.json();
+      } catch (e) {
+        console.warn("API /api/products unavailable, using Supabase service");
+      }
+      if (!data || !Array.isArray(data) || data.length === 0) {
+        data = await getProducts();
+      }
+      setProducts(data || []);
     } catch (err) {
       console.error("Failed to load products", err);
     }
@@ -85,9 +106,14 @@ export default function App() {
 
   const fetchOrders = async () => {
     try {
-      const res = await fetch("/api/orders");
-      if (!res.ok) throw new Error("Failed to fetch orders");
-      const data = await res.json();
+      let data;
+      try {
+        const res = await fetch("/api/orders");
+        if (res.ok) data = await res.json();
+      } catch (e) {
+        console.warn("API /api/orders unavailable, using Supabase service");
+      }
+      if (!data) data = await getOrders();
       setOrders(data || []);
     } catch (err) {
       console.error("Failed to load orders", err);
@@ -96,10 +122,15 @@ export default function App() {
 
   const fetchPromotions = async () => {
     try {
-      const res = await fetch("/api/promotions");
-      if (!res.ok) throw new Error("Failed to fetch promotions");
-      const data = await res.json();
-      setPromotions(data);
+      let data;
+      try {
+        const res = await fetch("/api/promotions");
+        if (res.ok) data = await res.json();
+      } catch (e) {
+        console.warn("API /api/promotions unavailable, using Supabase service");
+      }
+      if (!data) data = await getPromotions();
+      setPromotions(data || []);
     } catch (err) {
       console.error("Failed to load promotions", err);
     }
@@ -108,9 +139,14 @@ export default function App() {
   const fetchAnalytics = async () => {
     try {
       setLoading(true);
-      const res = await fetch("/api/analytics");
-      if (!res.ok) throw new Error("Failed to fetch analytics");
-      const data = await res.json();
+      let data;
+      try {
+        const res = await fetch("/api/analytics");
+        if (res.ok) data = await res.json();
+      } catch (e) {
+        console.warn("API /api/analytics unavailable, using Supabase service");
+      }
+      if (!data) data = await getAnalyticsData();
       setAnalyticsData(data || {});
     } catch (err) {
       console.error("Failed to aggregate analytics", err);
@@ -118,6 +154,7 @@ export default function App() {
       setLoading(false);
     }
   };
+
 
   // Cart operations
   const handleAddToCart = (product, size, qty) => {

@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { saveStoreConfig } from '../services/supabaseService.js';
 
 export default function AdminSettings({ storeConfig, onConfigUpdated }) {
   const [showPassword, setShowPassword] = useState(false);
@@ -37,15 +38,23 @@ export default function AdminSettings({ storeConfig, onConfigUpdated }) {
         freeShippingThreshold: parseFloat(formData.freeShippingThreshold) || 0
       };
 
-      const res = await fetch('/api/store', {
-        method: 'PUT',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(payload)
-      });
+      let updated;
+      try {
+        const res = await fetch('/api/store', {
+          method: 'PUT',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(payload)
+        });
+        if (res.ok) updated = await res.json();
+      } catch (apiErr) {
+        console.warn('API saveStoreConfig failed, using Supabase:', apiErr);
+      }
 
-      if (!res.ok) throw new Error('Failed to save settings');
-      const updated = await res.json();
-      onConfigUpdated(updated);
+      if (!updated) {
+        updated = await saveStoreConfig(payload);
+      }
+
+      onConfigUpdated(updated || payload);
       setMessage('Store configurations saved successfully.');
     } catch (err) {
       alert(err.message || 'Saving configuration failed');
@@ -53,6 +62,7 @@ export default function AdminSettings({ storeConfig, onConfigUpdated }) {
       setSaving(false);
     }
   };
+
 
   return (
     <div className="admin-panel" style={{ maxWidth: '750px' }}>

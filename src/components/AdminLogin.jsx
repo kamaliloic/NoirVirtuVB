@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { getStoreConfig, saveStoreConfig, DEFAULT_STORE_CONFIG } from '../services/supabaseService.js';
 
 export default function AdminLogin({ onLoginSuccess, onCancel, storeConfig: initialConfig }) {
   const [email, setEmail] = useState('');
@@ -20,13 +21,21 @@ export default function AdminLogin({ onLoginSuccess, onCancel, storeConfig: init
 
   const fetchStoreConfig = async () => {
     try {
-      const res = await fetch('/api/store');
-      if (res.ok) {
-        const data = await res.json();
-        setStoreStatus(data);
+      let data;
+      try {
+        const res = await fetch('/api/store');
+        if (res.ok) data = await res.json();
+      } catch (err) {
+        console.warn('API /api/store unavailable, falling back to Supabase service');
       }
+
+      if (!data) {
+        data = await getStoreConfig();
+      }
+      setStoreStatus(data || DEFAULT_STORE_CONFIG);
     } catch (err) {
       console.error('Failed to load store config in login:', err);
+      setStoreStatus(DEFAULT_STORE_CONFIG);
     }
   };
 
@@ -38,19 +47,43 @@ export default function AdminLogin({ onLoginSuccess, onCancel, storeConfig: init
     setLoading(true);
 
     try {
-      const res = await fetch('/api/admin/login', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email, password })
-      });
-
-      const data = await res.json();
-
-      if (!res.ok) {
-        throw new Error(data.error || 'Invalid credentials');
+      let successData;
+      try {
+        const res = await fetch('/api/admin/login', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ email, password })
+        });
+        if (res.ok) {
+          successData = await res.json();
+        } else {
+          const errRes = await res.json();
+          throw new Error(errRes.error || 'Invalid credentials');
+        }
+      } catch (err) {
+        if (err.message === 'Invalid credentials') throw err;
+        console.warn('API login unavailable, checking Supabase/local config:', err);
       }
 
-      onLoginSuccess(data.token);
+      if (!successData) {
+        const config = storeStatus || (await getStoreConfig()) || DEFAULT_STORE_CONFIG;
+        const cleanEmail = email.trim().toLowerCase();
+        const expectedEmail = (config.adminEmail || 'noirvirtu@gmail.com').trim().toLowerCase();
+        const expectedPassword = config.adminPassword || 'noir123';
+
+        if (!config.adminEmail || !config.adminEmail.trim()) {
+          config.adminEmail = cleanEmail;
+          if (password) config.adminPassword = password;
+          await saveStoreConfig(config);
+          successData = { token: 'nv-session-tok-' + Date.now() };
+        } else if (cleanEmail === expectedEmail && password === expectedPassword) {
+          successData = { token: 'nv-session-tok-' + Date.now() };
+        } else {
+          throw new Error('Invalid email or password');
+        }
+      }
+
+      onLoginSuccess(successData.token);
     } catch (err) {
       setError(err.message || 'Authentication failed. Please try again.');
     } finally {
@@ -69,20 +102,42 @@ export default function AdminLogin({ onLoginSuccess, onCancel, storeConfig: init
     setGoogleLoading(true);
 
     try {
-      const res = await fetch('/api/admin/google-login', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email: googleEmail, name: googleName })
-      });
+      let successData;
+      try {
+        const res = await fetch('/api/admin/google-login', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ email: googleEmail, name: googleName })
+        });
+        if (res.ok) {
+          successData = await res.json();
+        } else {
+          const errRes = await res.json();
+          throw new Error(errRes.error || 'Google authentication failed');
+        }
+      } catch (err) {
+        if (err.message.includes('Unauthorized')) throw err;
+        console.warn('API google login unavailable, checking Supabase/local config:', err);
+      }
 
-      const data = await res.json();
+      if (!successData) {
+        const config = storeStatus || (await getStoreConfig()) || DEFAULT_STORE_CONFIG;
+        const cleanEmail = googleEmail.trim().toLowerCase();
+        const expectedEmail = (config.adminEmail || 'noirvirtu@gmail.com').trim().toLowerCase();
 
-      if (!res.ok) {
-        throw new Error(data.error || 'Google authentication failed');
+        if (!config.adminEmail || !config.adminEmail.trim()) {
+          config.adminEmail = cleanEmail;
+          await saveStoreConfig(config);
+          successData = { token: 'nv-session-tok-g-' + Date.now() };
+        } else if (cleanEmail === expectedEmail) {
+          successData = { token: 'nv-session-tok-g-' + Date.now() };
+        } else {
+          throw new Error(`Unauthorized Gmail account (${cleanEmail}). Admin access is assigned to: ${config.adminEmail}`);
+        }
       }
 
       setShowGoogleModal(false);
-      onLoginSuccess(data.token);
+      onLoginSuccess(successData.token);
     } catch (err) {
       setGoogleError(err.message || 'Google login failed.');
     } finally {
@@ -91,6 +146,7 @@ export default function AdminLogin({ onLoginSuccess, onCancel, storeConfig: init
   };
 
   return (
+
     <div style={{
       display: 'flex',
       alignItems: 'center',

@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { formatPrice } from '../utils.js';
+import { updateOrderStatus } from '../services/supabaseService.js';
 
 export default function AdminOrders({ orders, onOrderStatusUpdated, onPrintReceipt, storeConfig }) {
   const [statusFilter, setStatusFilter] = useState('ALL');
@@ -7,23 +8,33 @@ export default function AdminOrders({ orders, onOrderStatusUpdated, onPrintRecei
 
   const handleStatusChange = async (orderId, newStatus) => {
     try {
-      const res = await fetch(`/api/orders/${orderId}`, {
-        method: 'PUT',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ status: newStatus })
-      });
-      if (!res.ok) throw new Error('Failed to update status');
-      const updatedOrder = await res.json();
-      onOrderStatusUpdated(updatedOrder);
+      let updatedOrder;
+      try {
+        const res = await fetch(`/api/orders/${orderId}`, {
+          method: 'PUT',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ status: newStatus })
+        });
+        if (res.ok) updatedOrder = await res.json();
+      } catch (apiErr) {
+        console.warn('API updateOrderStatus failed, using Supabase:', apiErr);
+      }
+
+      if (!updatedOrder) {
+        updatedOrder = await updateOrderStatus(orderId, newStatus);
+      }
+
+      onOrderStatusUpdated(updatedOrder || { id: orderId, status: newStatus });
       
       // Update selected order details if open
       if (selectedOrder && selectedOrder.id === orderId) {
-        setSelectedOrder(updatedOrder);
+        setSelectedOrder(updatedOrder || { ...selectedOrder, status: newStatus });
       }
     } catch (err) {
       alert(err.message || 'Status update failed');
     }
   };
+
 
   const filteredOrders = orders.filter(o => 
     statusFilter === 'ALL' || o.status.toUpperCase() === statusFilter

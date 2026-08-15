@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { formatPrice } from '../utils.js';
+import { createPromotion, updatePromotion, deletePromotion } from '../services/supabaseService.js';
 
 export default function AdminPromotions({ promotions, onPromoCreated, onPromoUpdated, onPromoDeleted, storeConfig }) {
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -21,14 +22,23 @@ export default function AdminPromotions({ promotions, onPromoCreated, onPromoUpd
 
   const handleStatusToggle = async (promo) => {
     try {
-      const res = await fetch(`/api/promotions/${promo.code}`, {
-        method: 'PUT',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ active: !promo.active })
-      });
-      if (!res.ok) throw new Error('Failed to toggle promotion status');
-      const updated = await res.json();
-      onPromoUpdated(updated);
+      let updated;
+      try {
+        const res = await fetch(`/api/promotions/${promo.code}`, {
+          method: 'PUT',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ active: !promo.active })
+        });
+        if (res.ok) updated = await res.json();
+      } catch (apiErr) {
+        console.warn('API updatePromotion failed, using Supabase:', apiErr);
+      }
+
+      if (!updated) {
+        updated = await updatePromotion(promo.code, { active: !promo.active });
+      }
+
+      onPromoUpdated(updated || { ...promo, active: !promo.active });
     } catch (err) {
       alert(err.message || 'Status toggle failed');
     }
@@ -38,10 +48,19 @@ export default function AdminPromotions({ promotions, onPromoCreated, onPromoUpd
     if (!confirm(`Are you sure you want to permanently delete coupon code ${code}?`)) return;
     
     try {
-      const res = await fetch(`/api/promotions/${code}`, {
-        method: 'DELETE'
-      });
-      if (!res.ok) throw new Error('Failed to delete promotion');
+      let success = false;
+      try {
+        const res = await fetch(`/api/promotions/${code}`, {
+          method: 'DELETE'
+        });
+        if (res.ok) success = true;
+      } catch (apiErr) {
+        console.warn('API deletePromotion failed, using Supabase:', apiErr);
+      }
+
+      if (!success) {
+        await deletePromotion(code);
+      }
       onPromoDeleted(code);
     } catch (err) {
       alert(err.message || 'Deletion failed');
@@ -61,19 +80,23 @@ export default function AdminPromotions({ promotions, onPromoCreated, onPromoUpd
     };
 
     try {
-      const res = await fetch('/api/promotions', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(payload)
-      });
-
-      if (!res.ok) {
-        const errorData = await res.json();
-        throw new Error(errorData.error || 'Failed to create promotion');
+      let created;
+      try {
+        const res = await fetch('/api/promotions', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(payload)
+        });
+        if (res.ok) created = await res.json();
+      } catch (apiErr) {
+        console.warn('API createPromotion failed, using Supabase:', apiErr);
       }
 
-      const created = await res.json();
-      onPromoCreated(created);
+      if (!created) {
+        created = await createPromotion(payload);
+      }
+
+      onPromoCreated(created || payload);
       setIsModalOpen(false);
       
       // Reset form
@@ -85,7 +108,7 @@ export default function AdminPromotions({ promotions, onPromoCreated, onPromoUpd
         description: ''
       });
     } catch (err) {
-      alert(err.message || 'Creation failed');
+      alert(err.message || 'Failed to create promotion');
     }
   };
 

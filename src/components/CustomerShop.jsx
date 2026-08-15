@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { formatPrice } from '../utils.js';
+import { getProducts } from '../services/supabaseService.js';
 
 export default function CustomerShop({ onProductSelect, cartItemsCount, onCartOpen, onNavigateToAdmin, storeConfig }) {
   const [products, setProducts] = useState([]);
@@ -15,18 +16,30 @@ export default function CustomerShop({ onProductSelect, cartItemsCount, onCartOp
   const fetchProducts = async () => {
     try {
       setLoading(true);
-      const res = await fetch('/api/products');
-      if (!res.ok) throw new Error('Failed to fetch catalog');
-      const data = await res.json();
-      setProducts(data);
+      let data;
+      try {
+        const res = await fetch('/api/products');
+        if (res.ok) {
+          data = await res.json();
+        }
+      } catch (apiErr) {
+        console.warn('API /api/products request failed, falling back to Supabase:', apiErr);
+      }
+
+      if (!data || !Array.isArray(data) || data.length === 0) {
+        data = await getProducts();
+      }
+
+      setProducts(data || []);
       setError(null);
     } catch (err) {
-      console.error(err);
-      setError('Could not load streetwear collection. Verify that the local server is running.');
+      console.error('Failed to load products:', err);
+      setError('Could not load streetwear collection. Please try refreshing the page.');
     } finally {
       setLoading(false);
     }
   };
+
 
   // Extract all categories
   const categories = ['ALL', 'TOPS', 'BOTTOMS', 'ACCESSORIES'];

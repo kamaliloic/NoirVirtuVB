@@ -10,11 +10,11 @@
 export const formatPrice = (amount, currency = 'Rwf') => {
   const cur = (currency || 'Rwf').toUpperCase();
   const numericAmount = Number(amount) || 0;
-  
+
   if (cur === 'RWF') {
     return `Rwf ${Math.round(numericAmount).toLocaleString('en-US')}`;
   }
-  
+
   // Default to USD decimal style
   const symbol = cur === 'USD' ? '$' : `${currency} `;
   return `${symbol}${numericAmount.toFixed(2)}`;
