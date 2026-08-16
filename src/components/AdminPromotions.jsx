@@ -22,22 +22,7 @@ export default function AdminPromotions({ promotions, onPromoCreated, onPromoUpd
 
   const handleStatusToggle = async (promo) => {
     try {
-      let updated;
-      try {
-        const res = await fetch(`/api/promotions/${promo.code}`, {
-          method: 'PUT',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ active: !promo.active })
-        });
-        if (res.ok) updated = await res.json();
-      } catch (apiErr) {
-        console.warn('API updatePromotion failed, using Supabase:', apiErr);
-      }
-
-      if (!updated) {
-        updated = await updatePromotion(promo.code, { active: !promo.active });
-      }
-
+      const updated = await updatePromotion(promo.code, { active: !promo.active });
       onPromoUpdated(updated || { ...promo, active: !promo.active });
     } catch (err) {
       alert(err.message || 'Status toggle failed');
@@ -48,19 +33,7 @@ export default function AdminPromotions({ promotions, onPromoCreated, onPromoUpd
     if (!confirm(`Are you sure you want to permanently delete coupon code ${code}?`)) return;
     
     try {
-      let success = false;
-      try {
-        const res = await fetch(`/api/promotions/${code}`, {
-          method: 'DELETE'
-        });
-        if (res.ok) success = true;
-      } catch (apiErr) {
-        console.warn('API deletePromotion failed, using Supabase:', apiErr);
-      }
-
-      if (!success) {
-        await deletePromotion(code);
-      }
+      await deletePromotion(code);
       onPromoDeleted(code);
     } catch (err) {
       alert(err.message || 'Deletion failed');
@@ -80,22 +53,7 @@ export default function AdminPromotions({ promotions, onPromoCreated, onPromoUpd
     };
 
     try {
-      let created;
-      try {
-        const res = await fetch('/api/promotions', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify(payload)
-        });
-        if (res.ok) created = await res.json();
-      } catch (apiErr) {
-        console.warn('API createPromotion failed, using Supabase:', apiErr);
-      }
-
-      if (!created) {
-        created = await createPromotion(payload);
-      }
-
+      const created = await createPromotion(payload);
       onPromoCreated(created || payload);
       setIsModalOpen(false);
       

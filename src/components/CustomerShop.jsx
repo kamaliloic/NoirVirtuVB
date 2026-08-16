@@ -16,20 +16,7 @@ export default function CustomerShop({ onProductSelect, cartItemsCount, onCartOp
   const fetchProducts = async () => {
     try {
       setLoading(true);
-      let data;
-      try {
-        const res = await fetch('/api/products');
-        if (res.ok) {
-          data = await res.json();
-        }
-      } catch (apiErr) {
-        console.warn('API /api/products request failed, falling back to Supabase:', apiErr);
-      }
-
-      if (!data || !Array.isArray(data) || data.length === 0) {
-        data = await getProducts();
-      }
-
+      const data = await getProducts();
       setProducts(data || []);
       setError(null);
     } catch (err) {

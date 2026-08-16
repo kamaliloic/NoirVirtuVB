@@ -8,22 +8,7 @@ export default function AdminOrders({ orders, onOrderStatusUpdated, onPrintRecei
 
   const handleStatusChange = async (orderId, newStatus) => {
     try {
-      let updatedOrder;
-      try {
-        const res = await fetch(`/api/orders/${orderId}`, {
-          method: 'PUT',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ status: newStatus })
-        });
-        if (res.ok) updatedOrder = await res.json();
-      } catch (apiErr) {
-        console.warn('API updateOrderStatus failed, using Supabase:', apiErr);
-      }
-
-      if (!updatedOrder) {
-        updatedOrder = await updateOrderStatus(orderId, newStatus);
-      }
-
+      const updatedOrder = await updateOrderStatus(orderId, newStatus);
       onOrderStatusUpdated(updatedOrder || { id: orderId, status: newStatus });
       
       // Update selected order details if open

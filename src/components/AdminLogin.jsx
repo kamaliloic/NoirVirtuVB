@@ -14,17 +14,7 @@ export default function AdminLogin({ onLoginSuccess, onCancel, storeConfig: init
 
   const fetchStoreConfig = async () => {
     try {
-      let data;
-      try {
-        const res = await fetch('/api/store');
-        if (res.ok) data = await res.json();
-      } catch (err) {
-        console.warn('API /api/store unavailable, falling back to Supabase service');
-      }
-
-      if (!data) {
-        data = await getStoreConfig();
-      }
+      const data = await getStoreConfig();
       setStoreStatus(data || DEFAULT_STORE_CONFIG);
     } catch (err) {
       console.error('Failed to load store config in login:', err);
@@ -38,38 +28,17 @@ export default function AdminLogin({ onLoginSuccess, onCancel, storeConfig: init
     setLoading(true);
 
     try {
-      let successData;
-      try {
-        const res = await fetch('/api/admin/login', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ email, password })
-        });
-        if (res.ok) {
-          successData = await res.json();
-        } else {
-          const errRes = await res.json();
-          throw new Error(errRes.error || 'Invalid email or password');
-        }
-      } catch (err) {
-        if (err.message === 'Invalid email or password' || err.message === 'Invalid credentials') throw err;
-        console.warn('API login unavailable, checking Supabase/local config:', err);
+      const config = storeStatus || (await getStoreConfig()) || DEFAULT_STORE_CONFIG;
+      const cleanEmail = email.trim().toLowerCase();
+      const expectedEmail = (config.adminEmail || 'noirvirtu@gmail.com').trim().toLowerCase();
+      const expectedPassword = config.adminPassword || 'noir123';
+
+      if (cleanEmail === expectedEmail && password === expectedPassword) {
+        const token = 'nv-session-tok-' + Date.now();
+        onLoginSuccess(token);
+      } else {
+        throw new Error('Invalid email or password');
       }
-
-      if (!successData) {
-        const config = storeStatus || (await getStoreConfig()) || DEFAULT_STORE_CONFIG;
-        const cleanEmail = email.trim().toLowerCase();
-        const expectedEmail = (config.adminEmail || 'noirvirtu@gmail.com').trim().toLowerCase();
-        const expectedPassword = config.adminPassword || 'noir123';
-
-        if (cleanEmail === expectedEmail && password === expectedPassword) {
-          successData = { token: 'nv-session-tok-' + Date.now() };
-        } else {
-          throw new Error('Invalid email or password');
-        }
-      }
-
-      onLoginSuccess(successData.token);
     } catch (err) {
       setError(err.message || 'Authentication failed. Please try again.');
     } finally {

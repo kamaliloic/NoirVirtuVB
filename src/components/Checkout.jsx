@@ -169,17 +169,7 @@ export default function Checkout({ cartItems, storeConfig, onOrderSuccess, onCan
     
     try {
       setPromoError('');
-      let promos;
-      try {
-        const res = await fetch('/api/promotions');
-        if (res.ok) promos = await res.json();
-      } catch (err) {
-        console.warn('API /api/promotions unavailable, using Supabase service');
-      }
-
-      if (!promos) {
-        promos = await getPromotions();
-      }
+      const promos = await getPromotions();
       
       const found = promos.find(p => p.code.toUpperCase() === promoCodeInput.toUpperCase());
       
@@ -237,31 +227,12 @@ export default function Checkout({ cartItems, storeConfig, onOrderSuccess, onCan
         paymentMethod: `${momoProvider} (${momoPhone.trim()})`
       };
 
-      let completedOrder;
-      try {
-        const res = await fetch('/api/orders', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify(orderPayload)
-        });
-
-        if (res.ok) {
-          completedOrder = await res.json();
-        }
-      } catch (apiErr) {
-        console.warn('API /api/orders failed, using Supabase createOrder:', apiErr);
-      }
-
-      if (!completedOrder) {
-        completedOrder = await createOrder(orderPayload);
-      }
-
+      const completedOrder = await createOrder(orderPayload);
       onOrderSuccess(completedOrder);
     } catch (err) {
       console.error(err);
       setError(err.message || 'Mobile Money payment failed. Please check your phone prompt.');
     } finally {
-
       setProcessing(false);
     }
   };

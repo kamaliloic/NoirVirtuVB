@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { formatPrice } from '../utils.js';
-import { createProduct, updateProduct, deleteProduct } from '../services/supabaseService.js';
+import { createProduct, updateProduct, deleteProduct, uploadProductImage } from '../services/supabaseService.js';
 
 export default function AdminProducts({ products, onProductCreated, onProductUpdated, onProductDeleted, storeConfig }) {
 
@@ -47,40 +47,16 @@ export default function AdminProducts({ products, onProductCreated, onProductUpd
     setUploadError('');
     
     try {
-      const reader = new FileReader();
-      reader.onload = async (e) => {
-        const base64Data = e.target.result.split(',')[1];
-        try {
-          const res = await fetch('/api/upload', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({
-              name: file.name,
-              data: base64Data
-            })
-          });
-          
-          if (!res.ok) {
-            throw new Error('Server returned error status');
-          }
-          
-          const result = await res.json();
-          setFormData(prev => ({
-            ...prev,
-            images: [...prev.images, result.url]
-          }));
-        } catch (err) {
-          setUploadError('Failed to upload image to backend.');
-          console.error(err);
-        } finally {
-          setUploading(false);
-        }
-      };
-      reader.readAsDataURL(file);
+      const imageUrl = await uploadProductImage(file);
+      setFormData(prev => ({
+        ...prev,
+        images: [...prev.images, imageUrl]
+      }));
     } catch (err) {
-      setUploadError('Failed to read image file.');
-      setUploading(false);
+      setUploadError('Failed to process image upload.');
       console.error(err);
+    } finally {
+      setUploading(false);
     }
   };
 
@@ -163,42 +139,14 @@ export default function AdminProducts({ products, onProductCreated, onProductUpd
     try {
       if (editingProduct) {
         // Edit Mode
-        let updated;
-        try {
-          const res = await fetch(`/api/products/${editingProduct.id}`, {
-            method: 'PUT',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify(formattedData)
-          });
-          if (res.ok) updated = await res.json();
-        } catch (apiErr) {
-          console.warn('API updateProduct failed, using Supabase:', apiErr);
-        }
-
-        if (!updated) {
-          updated = await updateProduct(editingProduct.id, formattedData);
-        }
+        const updated = await updateProduct(editingProduct.id, formattedData);
         onProductUpdated(updated || { ...editingProduct, ...formattedData });
       } else {
         // Add Mode
-        let created;
-        try {
-          const res = await fetch('/api/products', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify(formattedData)
-          });
-          if (res.ok) created = await res.json();
-        } catch (apiErr) {
-          console.warn('API createProduct failed, using Supabase:', apiErr);
-        }
-
-        if (!created) {
-          created = await createProduct({
-            ...formattedData,
-            id: formattedData.id || `NOIR-${Math.floor(100 + Math.random() * 900)}`
-          });
-        }
+        const created = await createProduct({
+          ...formattedData,
+          id: formattedData.id || `NOIR-${Math.floor(100 + Math.random() * 900)}`
+        });
         onProductCreated(created || formattedData);
       }
       setIsModalOpen(false);
@@ -211,19 +159,7 @@ export default function AdminProducts({ products, onProductCreated, onProductUpd
     if (!confirm('Are you sure you want to permanently delete this streetwear product from the archive?')) return;
     
     try {
-      let success = false;
-      try {
-        const res = await fetch(`/api/products/${productId}`, {
-          method: 'DELETE'
-        });
-        if (res.ok) success = true;
-      } catch (apiErr) {
-        console.warn('API deleteProduct failed, using Supabase:', apiErr);
-      }
-
-      if (!success) {
-        await deleteProduct(productId);
-      }
+      await deleteProduct(productId);
       onProductDeleted(productId);
     } catch (err) {
       alert(err.message || 'Deletion failed');

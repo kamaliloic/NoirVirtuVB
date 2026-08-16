@@ -70,16 +70,8 @@ export default function App() {
   };
 
   const fetchStoreConfig = async () => {
-
     try {
-      let data;
-      try {
-        const res = await fetch("/api/store");
-        if (res.ok) data = await res.json();
-      } catch (e) {
-        console.warn("API /api/store unavailable, using Supabase service");
-      }
-      if (!data) data = await getStoreConfig();
+      const data = await getStoreConfig();
       setStoreConfig(data || {});
     } catch (err) {
       console.error("Failed to load store config", err);
@@ -88,16 +80,7 @@ export default function App() {
 
   const fetchProducts = async () => {
     try {
-      let data;
-      try {
-        const res = await fetch("/api/products");
-        if (res.ok) data = await res.json();
-      } catch (e) {
-        console.warn("API /api/products unavailable, using Supabase service");
-      }
-      if (!data || !Array.isArray(data) || data.length === 0) {
-        data = await getProducts();
-      }
+      const data = await getProducts();
       setProducts(data || []);
     } catch (err) {
       console.error("Failed to load products", err);
@@ -106,14 +89,7 @@ export default function App() {
 
   const fetchOrders = async () => {
     try {
-      let data;
-      try {
-        const res = await fetch("/api/orders");
-        if (res.ok) data = await res.json();
-      } catch (e) {
-        console.warn("API /api/orders unavailable, using Supabase service");
-      }
-      if (!data) data = await getOrders();
+      const data = await getOrders();
       setOrders(data || []);
     } catch (err) {
       console.error("Failed to load orders", err);
@@ -122,14 +98,7 @@ export default function App() {
 
   const fetchPromotions = async () => {
     try {
-      let data;
-      try {
-        const res = await fetch("/api/promotions");
-        if (res.ok) data = await res.json();
-      } catch (e) {
-        console.warn("API /api/promotions unavailable, using Supabase service");
-      }
-      if (!data) data = await getPromotions();
+      const data = await getPromotions();
       setPromotions(data || []);
     } catch (err) {
       console.error("Failed to load promotions", err);
@@ -139,14 +108,7 @@ export default function App() {
   const fetchAnalytics = async () => {
     try {
       setLoading(true);
-      let data;
-      try {
-        const res = await fetch("/api/analytics");
-        if (res.ok) data = await res.json();
-      } catch (e) {
-        console.warn("API /api/analytics unavailable, using Supabase service");
-      }
-      if (!data) data = await getAnalyticsData();
+      const data = await getAnalyticsData();
       setAnalyticsData(data || {});
     } catch (err) {
       console.error("Failed to aggregate analytics", err);
@@ -607,7 +569,7 @@ export default function App() {
                     fontFamily: "var(--font-mono)",
                   }}
                 >
-                  System: ONLINE // DB: LOCAL FS
+                  System: ONLINE // DB: SUPABASE CLOUD
                 </div>
               </header>
 

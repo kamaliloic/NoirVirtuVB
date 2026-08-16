@@ -424,3 +424,31 @@ export async function getAnalyticsData() {
   };
 }
 
+// --- IMAGE UPLOADS ---
+export async function uploadProductImage(file) {
+  try {
+    const filename = `${Date.now()}-${file.name.replace(/[^a-zA-Z0-9.\-_]/g, '')}`;
+    const { data, error } = await supabase.storage
+      .from('products')
+      .upload(filename, file, { cacheControl: '3600', upsert: true });
+
+    if (!error && data) {
+      const { data: publicUrlData } = supabase.storage.from('products').getPublicUrl(filename);
+      if (publicUrlData?.publicUrl) {
+        return publicUrlData.publicUrl;
+      }
+    }
+  } catch (err) {
+    console.warn('Supabase storage upload failed, using Data URL fallback:', err);
+  }
+
+  // Fallback: Read as base64 Data URL (100% client-side serverless compatible)
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.onload = (e) => resolve(e.target.result);
+    reader.onerror = (err) => reject(err);
+    reader.readAsDataURL(file);
+  });
+}
+
+

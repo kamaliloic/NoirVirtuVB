@@ -38,22 +38,7 @@ export default function AdminSettings({ storeConfig, onConfigUpdated }) {
         freeShippingThreshold: parseFloat(formData.freeShippingThreshold) || 0
       };
 
-      let updated;
-      try {
-        const res = await fetch('/api/store', {
-          method: 'PUT',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify(payload)
-        });
-        if (res.ok) updated = await res.json();
-      } catch (apiErr) {
-        console.warn('API saveStoreConfig failed, using Supabase:', apiErr);
-      }
-
-      if (!updated) {
-        updated = await saveStoreConfig(payload);
-      }
-
+      const updated = await saveStoreConfig(payload);
       onConfigUpdated(updated || payload);
       setMessage('Store configurations saved successfully.');
     } catch (err) {
