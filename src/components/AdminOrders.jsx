@@ -151,8 +151,14 @@ export default function AdminOrders({ orders, onOrderStatusUpdated, onPrintRecei
                 <p style={{ fontWeight: 'bold' }}>{selectedOrder.customer.name}</p>
                 <p>{selectedOrder.customer.email}</p>
                 <p style={{ fontFamily: 'var(--font-mono)', color: 'var(--text-secondary)', marginTop: '0.25rem' }}>
-                  IP/Card: {selectedOrder.paymentMethod}
+                  Gateway: {selectedOrder.paymentMethod}
                 </p>
+                {selectedOrder.momoRef && (
+                  <div style={{ backgroundColor: 'rgba(245, 158, 11, 0.1)', border: '1px solid rgba(245, 158, 11, 0.3)', padding: '0.5rem', borderRadius: '4px', marginTop: '0.5rem', fontFamily: 'var(--font-mono)', fontSize: '0.75rem', color: '#f59e0b' }}>
+                    <div><strong>Tx Ref:</strong> {selectedOrder.momoRef}</div>
+                    <div><strong>MoMo Status:</strong> {selectedOrder.momoStatus || 'VERIFIED'} ✅</div>
+                  </div>
+                )}
               </div>
               <div>
                 <h4 style={{ textTransform: 'uppercase', fontSize: '0.75rem', color: 'var(--text-secondary)', marginBottom: '0.5rem' }}>Shipping Address</h4>

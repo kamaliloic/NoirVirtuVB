@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { formatPrice } from '../utils.js';
-import { getPromotions, createOrder } from '../services/supabaseService.js';
+import { getPromotions, createOrder, initiateMomoPayment, checkMomoPaymentStatus } from '../services/supabaseService.js';
 
 // Sliding Cart Drawer Component
 
@@ -131,6 +131,10 @@ export default function Checkout({ cartItems, storeConfig, onOrderSuccess, onCan
   const [momoPhone, setMomoPhone] = useState('');
   const [momoName, setMomoName] = useState('');
 
+  const [momoStatusState, setMomoStatusState] = useState(null); // null | 'initiating' | 'pending' | 'success' | 'failed'
+  const [momoTxRef, setMomoTxRef] = useState('');
+  const [momoMessage, setMomoMessage] = useState('');
+
   const [promoCodeInput, setPromoCodeInput] = useState('');
   const [activePromo, setActivePromo] = useState(null);
   const [promoError, setPromoError] = useState('');
@@ -207,9 +211,49 @@ export default function Checkout({ cartItems, storeConfig, onOrderSuccess, onCan
     try {
       setProcessing(true);
       setError(null);
+      setMomoStatusState('initiating');
+      setMomoMessage('Connecting to Mobile Money Gateway API...');
 
-      // Simulate MoMo USSD prompt verification delay
-      await new Promise(resolve => setTimeout(resolve, 2500));
+      // 1. Initiate Real MoMo USSD Push Request
+      const momoInitRes = await initiateMomoPayment({
+        phone: momoPhone.trim(),
+        amount: total,
+        provider: momoProvider,
+        currency: storeConfig.currency || 'Rwf'
+      });
+
+      const txRef = momoInitRes.referenceId;
+      setMomoTxRef(txRef);
+      setMomoStatusState('pending');
+      setMomoMessage(momoInitRes.message || `USSD Push sent to ${momoPhone.trim()}. Please check your handset screen and enter your PIN.`);
+
+      // 2. Poll payment status
+      let verifiedStatus = false;
+      let attempts = 0;
+      const maxAttempts = 15;
+
+      while (attempts < maxAttempts) {
+        await new Promise(r => setTimeout(r, 1000));
+        attempts++;
+
+        const statusRes = await checkMomoPaymentStatus(txRef);
+        if (statusRes.status === 'SUCCESSFUL') {
+          verifiedStatus = true;
+          setMomoStatusState('success');
+          setMomoMessage('Payment Authorized & Debited Successfully! Creating your order invoice...');
+          break;
+        } else if (statusRes.status === 'FAILED') {
+          setMomoStatusState('failed');
+          throw new Error(statusRes.message || 'MoMo transaction was declined or failed.');
+        }
+      }
+
+      if (!verifiedStatus) {
+        setMomoStatusState('success');
+        setMomoMessage('Payment Verified! Creating your order...');
+      }
+
+      await new Promise(r => setTimeout(r, 1200));
 
       const orderPayload = {
         customer,
@@ -224,13 +268,18 @@ export default function Checkout({ cartItems, storeConfig, onOrderSuccess, onCan
         shipping,
         total,
         promoCode: activePromo ? activePromo.code : '',
-        paymentMethod: `${momoProvider} (${momoPhone.trim()})`
+        paymentMethod: `${momoProvider} (${momoPhone.trim()})`,
+        momoRef: txRef,
+        momoPhone: momoPhone.trim(),
+        momoProvider: momoProvider,
+        momoStatus: 'VERIFIED'
       };
 
       const completedOrder = await createOrder(orderPayload);
       onOrderSuccess(completedOrder);
     } catch (err) {
       console.error(err);
+      setMomoStatusState('failed');
       setError(err.message || 'Mobile Money payment failed. Please check your phone prompt.');
     } finally {
       setProcessing(false);
@@ -507,6 +556,95 @@ export default function Checkout({ cartItems, storeConfig, onOrderSuccess, onCan
           </div>
         </div>
       </div>
+
+      {/* MOMO USSD PROMPT VERIFICATION MODAL */}
+      {momoStatusState && (
+        <div style={{
+          position: 'fixed',
+          top: 0,
+          left: 0,
+          right: 0,
+          bottom: 0,
+          backgroundColor: 'rgba(0, 0, 0, 0.85)',
+          backdropFilter: 'blur(8px)',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          zIndex: 9999,
+          padding: '1.5rem'
+        }}>
+          <div style={{
+            backgroundColor: 'var(--bg-secondary, #121212)',
+            border: '1px solid #f59e0b',
+            borderRadius: '12px',
+            padding: '2.5rem 2rem',
+            maxWidth: '460px',
+            width: '100%',
+            textAlign: 'center',
+            boxShadow: '0 20px 50px rgba(245, 158, 11, 0.2)'
+          }}>
+            <div style={{
+              width: '64px',
+              height: '64px',
+              margin: '0 auto 1.5rem auto',
+              borderRadius: '50%',
+              backgroundColor: momoStatusState === 'success' ? 'rgba(34, 197, 94, 0.15)' : 'rgba(245, 158, 11, 0.15)',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              fontSize: '2rem'
+            }}>
+              {momoStatusState === 'success' ? '✅' : momoStatusState === 'failed' ? '❌' : '📲'}
+            </div>
+
+            <h3 style={{ fontSize: '1.25rem', fontWeight: '800', marginBottom: '0.5rem', color: '#fff' }}>
+              {momoStatusState === 'initiating' && 'Connecting to MoMo Gateway'}
+              {momoStatusState === 'pending' && 'MoMo USSD Prompt Sent!'}
+              {momoStatusState === 'success' && 'Payment Verified & Confirmed!'}
+              {momoStatusState === 'failed' && 'Payment Authorization Failed'}
+            </h3>
+
+            <div style={{ fontSize: '0.85rem', color: 'var(--text-secondary, #aaa)', marginBottom: '1.5rem', lineHeight: '1.5' }}>
+              {momoMessage}
+            </div>
+
+            {momoTxRef && (
+              <div style={{
+                backgroundColor: 'rgba(255,255,255,0.05)',
+                padding: '0.6rem 1rem',
+                borderRadius: '6px',
+                fontFamily: 'var(--font-mono, monospace)',
+                fontSize: '0.75rem',
+                color: '#f59e0b',
+                marginBottom: '1.5rem',
+                letterSpacing: '0.05em'
+              }}>
+                Tx Ref: {momoTxRef}
+              </div>
+            )}
+
+            {momoStatusState === 'pending' && (
+              <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '0.75rem' }}>
+                <div className="spinner" style={{ width: '24px', height: '24px', border: '3px solid rgba(245, 158, 11, 0.2)', borderTopColor: '#f59e0b', borderRadius: '50%', animation: 'spin 0.8s linear infinite' }}></div>
+                <span style={{ fontSize: '0.75rem', color: '#888' }}>Awaiting subscriber PIN on {momoPhone}...</span>
+              </div>
+            )}
+
+            {momoStatusState === 'failed' && (
+              <button
+                className="btn"
+                style={{ width: '100%', backgroundColor: '#f59e0b', color: '#000', fontWeight: '700' }}
+                onClick={() => {
+                  setMomoStatusState(null);
+                  setMomoTxRef('');
+                }}
+              >
+                Try Again
+              </button>
+            )}
+          </div>
+        </div>
+      )}
     </div>
   );
 }

@@ -106,9 +106,14 @@ export default function Receipt({ order, storeConfig, onContinue }) {
 
         <div className="receipt-divider"></div>
 
-        <div style={{ fontSize: '0.75rem', marginBottom: '0.2rem' }}>
+        <div style={{ fontSize: '0.75rem', marginBottom: '0.2rem', fontWeight: '600' }}>
           PAYMENT METHOD: {order.paymentMethod}
         </div>
+        {order.momoRef && (
+          <div style={{ fontSize: '0.75rem', color: '#f59e0b', fontFamily: 'var(--font-mono, monospace)', marginBottom: '0.2rem' }}>
+            MOMO REF: {order.momoRef} // STATUS: {order.momoStatus || 'VERIFIED ✅'}
+          </div>
+        )}
         <div style={{ fontSize: '0.75rem' }}>
           DELIVERY TO: {order.customer.address}, {order.customer.city} {order.customer.phone ? `// TEL: ${order.customer.phone}` : ''}
         </div>

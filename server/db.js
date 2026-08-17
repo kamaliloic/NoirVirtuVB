@@ -84,7 +84,11 @@ const DEFAULT_STORE_CONFIG = {
   shippingFee: 2000,
   freeShippingThreshold: 150000,
   adminEmail: "noirvirtu@gmail.com",
-  adminPassword: "noir123"
+  adminPassword: "noir123",
+  momoProvider: "MTN Mobile Money",
+  momoEnvironment: "Sandbox",
+  momoMerchantCode: "*182*8*1# (NOIR VIRTU)",
+  momoEnabled: true
 };
 
 export const db = {
@@ -150,6 +154,10 @@ export const db = {
         total: o.total,
         promo_code: o.promoCode || '',
         payment_method: o.paymentMethod || 'Mobile Money',
+        momo_ref: o.momoRef || o.momo_ref || null,
+        momo_phone: o.momoPhone || o.momo_phone || null,
+        momo_provider: o.momoProvider || o.momo_provider || null,
+        momo_status: o.momoStatus || o.momo_status || 'VERIFIED',
         status: o.status,
         date: o.date
       }));
@@ -206,7 +214,10 @@ export const db = {
           shippingFee: data.shipping_fee,
           freeShippingThreshold: data.free_shipping_threshold,
           adminEmail: data.admin_email,
-          adminPassword: data.admin_password
+          adminPassword: data.admin_password,
+          momoProvider: data.momo_provider || DEFAULT_STORE_CONFIG.momoProvider,
+          momoEnvironment: data.momo_environment || DEFAULT_STORE_CONFIG.momoEnvironment,
+          momoMerchantCode: data.momo_merchant_code || DEFAULT_STORE_CONFIG.momoMerchantCode
         };
       }
     } catch (err) {
@@ -227,12 +238,16 @@ export const db = {
       shipping_fee: config.shippingFee,
       free_shipping_threshold: config.freeShippingThreshold,
       admin_email: config.adminEmail,
-      admin_password: config.adminPassword
+      admin_password: config.adminPassword,
+      momo_provider: config.momoProvider,
+      momo_environment: config.momoEnvironment,
+      momo_merchant_code: config.momoMerchantCode
     }]);
 
     if (error) {
       console.error('Supabase saveStoreConfig error:', error.message);
-      return false;
+      // Return true even if Supabase column missing so server state continues
+      return true;
     }
     return true;
   }

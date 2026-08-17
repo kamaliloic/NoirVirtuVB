@@ -12,7 +12,10 @@ export default function AdminSettings({ storeConfig, onConfigUpdated }) {
     shippingFee: storeConfig.shippingFee !== undefined ? storeConfig.shippingFee : 10.00,
     freeShippingThreshold: storeConfig.freeShippingThreshold !== undefined ? storeConfig.freeShippingThreshold : 150.00,
     adminEmail: storeConfig.adminEmail !== undefined ? storeConfig.adminEmail : '',
-    adminPassword: storeConfig.adminPassword || 'admin'
+    adminPassword: storeConfig.adminPassword || 'admin',
+    momoProvider: storeConfig.momoProvider || 'MTN Mobile Money',
+    momoEnvironment: storeConfig.momoEnvironment || 'Sandbox',
+    momoMerchantCode: storeConfig.momoMerchantCode || '*182*8*1# (NOIR VIRTU)'
   });
 
   const [saving, setSaving] = useState(false);
@@ -151,6 +154,73 @@ export default function AdminSettings({ storeConfig, onConfigUpdated }) {
             value={formData.freeShippingThreshold}
             onChange={handleInputChange}
           />
+        </div>
+
+        {/* MOBILE MONEY GATEWAY CONFIGURATION */}
+        <div style={{ borderTop: '1px dashed var(--border-color)', paddingTop: '1.5rem', marginTop: '1.5rem' }}>
+          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '1rem' }}>
+            <h4 style={{
+              textTransform: 'uppercase',
+              fontSize: '0.75rem',
+              letterSpacing: '0.1em',
+              color: '#f59e0b',
+              fontFamily: 'var(--font-display)',
+              fontWeight: '800',
+              margin: 0
+            }}>
+              📲 Mobile Money Gateway Settings (MoMo API)
+            </h4>
+            <span style={{ fontSize: '0.65rem', backgroundColor: 'rgba(245, 158, 11, 0.15)', color: '#f59e0b', padding: '0.2rem 0.6rem', fontWeight: '700', borderRadius: '4px' }}>
+              ONLINE GATEWAY
+            </span>
+          </div>
+
+          <div className="form-row">
+            <div className="form-group">
+              <label htmlFor="momo-provider-setting">Primary Telecom Network</label>
+              <select
+                name="momoProvider"
+                id="momo-provider-setting"
+                className="form-input"
+                value={formData.momoProvider || 'MTN Mobile Money'}
+                onChange={handleInputChange}
+                style={{ backgroundColor: 'var(--bg-primary)' }}
+              >
+                <option value="MTN Mobile Money">MTN Mobile Money (MoMo)</option>
+                <option value="Airtel Money">Airtel Money</option>
+                <option value="Paypack MoMo API">Paypack Rwanda API</option>
+              </select>
+            </div>
+
+            <div className="form-group">
+              <label htmlFor="momo-env-setting">API Execution Environment</label>
+              <select
+                name="momoEnvironment"
+                id="momo-env-setting"
+                className="form-input"
+                value={formData.momoEnvironment || 'Sandbox'}
+                onChange={handleInputChange}
+                style={{ backgroundColor: 'var(--bg-primary)' }}
+              >
+                <option value="Sandbox">Developer Sandbox API (Test Mode)</option>
+                <option value="Live">Live Production Telecom API</option>
+              </select>
+            </div>
+          </div>
+
+          <div className="form-group">
+            <label htmlFor="momo-merchant-setting">Merchant USSD Code / Merchant Number</label>
+            <input
+              type="text"
+              name="momoMerchantCode"
+              id="momo-merchant-setting"
+              className="form-input"
+              placeholder="e.g. *182*8*1# (NOIR VIRTU) or 0788123456"
+              value={formData.momoMerchantCode || '*182*8*1# (NOIR VIRTU)'}
+              onChange={handleInputChange}
+              style={{ backgroundColor: 'var(--bg-primary)', fontFamily: 'var(--font-mono)' }}
+            />
+          </div>
         </div>
 
         <div style={{ borderTop: '1px dashed var(--border-color)', paddingTop: '1.5rem', marginTop: '1.5rem' }}>

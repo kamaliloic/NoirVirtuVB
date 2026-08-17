@@ -208,6 +208,105 @@ app.put('/api/orders/:id', async (req, res) => {
 });
 
 
+// --- Mobile Money (MoMo) Gateway Endpoints ---
+const momoTransactions = new Map();
+
+app.post('/api/momo/pay', async (req, res) => {
+  try {
+    const { phone, amount, provider = 'MTN Mobile Money', currency = 'Rwf', orderId } = req.body;
+    
+    if (!phone || !phone.trim()) {
+      return res.status(400).json({ error: 'Valid MoMo registered phone number is required' });
+    }
+    
+    if (!amount || amount <= 0) {
+      return res.status(400).json({ error: 'Valid transaction amount is required' });
+    }
+
+    const cleanPhone = phone.replace(/[^0-9+]/g, '');
+    const referenceId = `MOMO-${Date.now()}-${Math.floor(1000 + Math.random() * 9000)}`;
+
+    const transactionRecord = {
+      referenceId,
+      phone: cleanPhone,
+      amount: parseFloat(amount),
+      currency,
+      provider,
+      orderId: orderId || `TMP-${Date.now()}`,
+      status: 'PENDING',
+      message: 'USSD prompt dispatched to handset. Awaiting customer PIN input.',
+      createdAt: new Date().toISOString(),
+      updatedAt: new Date().toISOString()
+    };
+
+    momoTransactions.set(referenceId, transactionRecord);
+
+    // Auto-transition status after 3.5 seconds to simulate USSD PIN authorization cycle in sandbox/test mode
+    setTimeout(() => {
+      const currentTx = momoTransactions.get(referenceId);
+      if (currentTx && currentTx.status === 'PENDING') {
+        if (cleanPhone.endsWith('0000')) {
+          currentTx.status = 'FAILED';
+          currentTx.message = 'Transaction rejected by subscriber or insufficient funds.';
+        } else {
+          currentTx.status = 'SUCCESSFUL';
+          currentTx.message = 'Payment authorized and debited successfully via MoMo USSD prompt.';
+        }
+        currentTx.updatedAt = new Date().toISOString();
+        momoTransactions.set(referenceId, currentTx);
+      }
+    }, 3500);
+
+    res.status(200).json({
+      success: true,
+      referenceId,
+      status: 'PENDING',
+      provider,
+      phone: cleanPhone,
+      amount: parseFloat(amount),
+      currency,
+      message: 'USSD prompt dispatched to phone. Enter your MoMo PIN to authorize payment.'
+    });
+  } catch (err) {
+    console.error('MoMo payment request error:', err);
+    res.status(500).json({ error: 'Failed to initialize MoMo payment transaction' });
+  }
+});
+
+app.get('/api/momo/status/:referenceId', async (req, res) => {
+  try {
+    const { referenceId } = req.params;
+    const tx = momoTransactions.get(referenceId);
+
+    if (!tx) {
+      return res.status(404).json({ error: 'MoMo transaction reference not found' });
+    }
+
+    res.json(tx);
+  } catch (err) {
+    res.status(500).json({ error: 'Failed to check MoMo transaction status' });
+  }
+});
+
+app.post('/api/momo/callback', async (req, res) => {
+  try {
+    const { referenceId, status, financialTransactionId } = req.body;
+    if (referenceId && momoTransactions.has(referenceId)) {
+      const tx = momoTransactions.get(referenceId);
+      tx.status = status || 'SUCCESSFUL';
+      if (financialTransactionId) tx.financialTransactionId = financialTransactionId;
+      tx.updatedAt = new Date().toISOString();
+      momoTransactions.set(referenceId, tx);
+    }
+    res.status(200).json({ status: 'ACCEPTED' });
+  } catch (err) {
+    res.status(500).json({ error: 'Webhook processing error' });
+  }
+});
+
+
+
+
 // --- Promotions Endpoints ---
 app.get('/api/promotions', async (req, res) => {
   try {
@@ -310,7 +409,10 @@ app.put('/api/store', async (req, res) => {
       shippingFee: req.body.shippingFee !== undefined ? parseFloat(req.body.shippingFee) : config.shippingFee,
       freeShippingThreshold: req.body.freeShippingThreshold !== undefined ? parseFloat(req.body.freeShippingThreshold) : config.freeShippingThreshold,
       adminEmail: req.body.adminEmail !== undefined ? req.body.adminEmail : (config.adminEmail || 'noirvirtu@gmail.com'),
-      adminPassword: req.body.adminPassword !== undefined ? req.body.adminPassword : (config.adminPassword || 'noir123')
+      adminPassword: req.body.adminPassword !== undefined ? req.body.adminPassword : (config.adminPassword || 'noir123'),
+      momoProvider: req.body.momoProvider !== undefined ? req.body.momoProvider : config.momoProvider,
+      momoEnvironment: req.body.momoEnvironment !== undefined ? req.body.momoEnvironment : config.momoEnvironment,
+      momoMerchantCode: req.body.momoMerchantCode !== undefined ? req.body.momoMerchantCode : config.momoMerchantCode
     };
 
     await db.saveStoreConfig(updatedConfig);
