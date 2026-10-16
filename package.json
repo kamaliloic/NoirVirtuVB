@@ -19,6 +19,7 @@
     "motion": "^14.3.0",
     "react": "^19.2.7",
     "react-dom": "^19.2.7",
+    "serverless-http": "^4.0.0",
     "sonner": "^2.0.8"
   },
   "devDependencies": {

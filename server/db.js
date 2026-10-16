@@ -1,11 +1,23 @@
 import fs from 'fs';
 import path from 'path';
+import os from 'os';
 import { fileURLToPath } from 'url';
 import supabase from './supabase.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
-const DATA_DIR = path.join(__dirname, 'data');
+
+// Detect serverless environment (Netlify Functions, AWS Lambda, Vercel)
+const IS_SERVERLESS = Boolean(
+  process.env.NETLIFY ||
+  process.env.AWS_LAMBDA_FUNCTION_NAME ||
+  process.env.LAMBDA_TASK_ROOT
+);
+
+const BUNDLED_DATA_DIR = path.join(__dirname, 'data');
+const WRITABLE_DATA_DIR = IS_SERVERLESS
+  ? path.join(os.tmpdir(), 'noirvirtu-data')
+  : BUNDLED_DATA_DIR;
 
 // Default Streetwear Catalog
 const DEFAULT_PRODUCTS = [
@@ -95,9 +107,13 @@ const DEFAULT_STORE_CONFIG = {
   adminPassword: "noir123"
 };
 
-// Ensure data directory exists
-if (!fs.existsSync(DATA_DIR)) {
-  fs.mkdirSync(DATA_DIR, { recursive: true });
+// Safely ensure writable directory exists
+try {
+  if (!fs.existsSync(WRITABLE_DATA_DIR)) {
+    fs.mkdirSync(WRITABLE_DATA_DIR, { recursive: true });
+  }
+} catch (err) {
+  console.warn('[DB] Cannot create WRITABLE_DATA_DIR:', err.message);
 }
 
 // In-Memory High-Speed Cache
@@ -110,30 +126,47 @@ const cache = {
   supabaseChecked: false
 };
 
-// Helper: Read JSON from disk safely
+// Helper: Read JSON from disk safely (checking writable first, then bundled seed data)
 function readJSON(filename, fallback) {
+  // 1. Try runtime writable data dir
+  const writablePath = path.join(WRITABLE_DATA_DIR, filename);
   try {
-    const filePath = path.join(DATA_DIR, filename);
-    if (fs.existsSync(filePath)) {
-      const raw = fs.readFileSync(filePath, 'utf-8');
+    if (fs.existsSync(writablePath)) {
+      const raw = fs.readFileSync(writablePath, 'utf-8');
       const data = JSON.parse(raw);
       if (Array.isArray(data) && data.length > 0) return data;
       if (data && typeof data === 'object' && Object.keys(data).length > 0) return data;
     }
-  } catch (err) {
-    console.warn(`[DB] Fallback reading ${filename}:`, err.message);
+  } catch {
+    // ignore
   }
+
+  // 2. Try bundled data dir (seed files)
+  if (WRITABLE_DATA_DIR !== BUNDLED_DATA_DIR) {
+    const bundledPath = path.join(BUNDLED_DATA_DIR, filename);
+    try {
+      if (fs.existsSync(bundledPath)) {
+        const raw = fs.readFileSync(bundledPath, 'utf-8');
+        const data = JSON.parse(raw);
+        if (Array.isArray(data) && data.length > 0) return data;
+        if (data && typeof data === 'object' && Object.keys(data).length > 0) return data;
+      }
+    } catch {
+      // ignore
+    }
+  }
+
   return fallback;
 }
 
 // Helper: Non-blocking atomic write to disk
 async function writeJSON(filename, data) {
   try {
-    const filePath = path.join(DATA_DIR, filename);
+    const filePath = path.join(WRITABLE_DATA_DIR, filename);
     await fs.promises.writeFile(filePath, JSON.stringify(data, null, 2), 'utf-8');
     return true;
   } catch (err) {
-    console.error(`[DB] Error persisting ${filename}:`, err.message);
+    console.warn(`[DB] Fallback persisting ${filename}:`, err.message);
     return false;
   }
 }
@@ -144,11 +177,12 @@ async function probeSupabase() {
   cache.supabaseChecked = true;
 
   try {
-    const timeoutPromise = new Promise((_, reject) =>
-      setTimeout(() => reject(new Error('Supabase probe timeout')), 600)
-    );
+    let timer;
+    const timeoutPromise = new Promise((_, reject) => {
+      timer = setTimeout(() => reject(new Error('Supabase probe timeout')), 600);
+    });
     const probePromise = supabase.from('products').select('id').limit(1);
-    await Promise.race([probePromise, timeoutPromise]);
+    await Promise.race([probePromise, timeoutPromise]).finally(() => clearTimeout(timer));
     cache.supabaseAvailable = true;
     console.log('[DB] Supabase connection active.');
   } catch {
@@ -173,7 +207,7 @@ function initCache() {
   cache.promotions = readJSON('promotions.json', DEFAULT_PROMOTIONS);
   cache.store = readJSON('store.json', DEFAULT_STORE_CONFIG);
   
-  // Asynchronously probe Supabase without blocking the server
+  // Asynchronously probe Supabase without blocking
   probeSupabase().catch(() => {});
 }
 
