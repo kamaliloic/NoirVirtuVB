@@ -1,0 +1,11 @@
+{
+  "name": "NOIR VIRTU KIGALI",
+  "address": "Kigali Heights, 2nd Floor, Kigali, Rwanda",
+  "phone": "+250 791276870",
+  "currency": "Rwf",
+  "taxRate": 0,
+  "shippingFee": 2000,
+  "freeShippingThreshold": 150000,
+  "adminEmail": "noirvirtu@gmail.com",
+  "adminPassword": "noir123"
+}
